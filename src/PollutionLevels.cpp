@@ -1,9 +1,9 @@
 #include <Arduino.h>
 
 #include "PollutionLevels.h"
-const uint8_t PollutionLevels::MAX_LEVELS = 5;
-const uint8_t PollutionLevels::PM25_LEVELS[] = {0, 15, 30, 55, 110};
-const uint8_t PollutionLevels::PM10_LEVELS[] = {0, 25, 50, 90, 180};
+const uint8_t PollutionLevels::MAX_LEVELS = 6;
+const uint8_t PollutionLevels::PM25_LEVELS[] = {0, 15, 30, 55, 110, 250};
+const uint8_t PollutionLevels::PM10_LEVELS[] = {0, 25, 50, 90, 180, 300};
 const uint8_t PollutionLevels::PM25_MAX = 25;
 const uint8_t PollutionLevels::PM10_MAX = 50;
 

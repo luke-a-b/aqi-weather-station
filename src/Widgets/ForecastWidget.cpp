@@ -1,46 +1,28 @@
 #include "Widgets/ForecastWidget.h"
+#include "Config.h"
 
-ForecastWidget::ForecastWidget(ForecastModel *model, uint16_t x, uint16_t y, uint8_t dayIndex) : Widget(x, y, 80, 67),
-                                                                                                 model(model),
-                                                                                                 dayIndex(dayIndex)
-{
-}
+ForecastWidget::ForecastWidget(ForecastModel *model, uint16_t x, uint16_t y,
+                               uint8_t dayIndex)
+    : Widget(x, y, 240, 72), model(model), dayIndex(dayIndex) {}
 
-void ForecastWidget::setCoordinates(int32_t x, int32_t y)
-{
-    if (x + width > 0 && x < tft.width() && y + height > 0 && y < tft.height())
-    {
-        bool isRedrawNeeded = this->x != x || this->y != y;
-        this->x = x;
-        this->y = y;
-        if (isRedrawNeeded)
-            redraw();
-    }
-}
+void ForecastWidget::redraw() {
+  if (isVisible) {
+    // tft.fillRect(x, y, width, height, TFT_BLUE);
 
-void ForecastWidget::redraw()
-{
-    if (isVisible)
-    {
-        TFT_eSprite sprite(&tft);
-        sprite.createSprite(width, height);
-        sprite.fillSprite(TFT_BLACK);
+    tft.loadFont(ArialBold14);
+    Widget::setTexFormat(ArialBold14, TL_DATUM, TFT_WHITE, TFT_BLACK, width);
+    tft.drawString(model->getForecastDescription(dayIndex), x + 5, y + 15);
 
-        sprite.loadFont(ARIAL_BOLD_14);
-        sprite.setTextDatum(BC_DATUM);
-        sprite.setTextColor(TFT_ORANGE, TFT_BLACK);
-        sprite.setTextPadding(width);
-        sprite.drawString(model->getForecastWeekDayName(dayIndex), width / 2, 13);
-        sprite.setTextColor(TFT_WHITE, TFT_BLACK);
-        String tempString = String(model->getForecastTemp(dayIndex), 0);
-        tempString += model->isMetricSelected() ? "°C" : "°F";
+    tft.setTextColor(TFT_ORANGE, TFT_BLACK);
+    // tft.drawString(model->getForecastWeekDayName(dayIndex), x + 5, y);
+    /*String tempString = String(model->getForecastTemp(dayIndex), 0);
+    tempString += model->isMetricSelected() ? FPSTR(CONST_UNIT_CELCIUS) :
+    FPSTR(CONST_UNIT_FAHRENHEIT);
 
-        sprite.drawString(tempString, width / 2, 13 + 13);
-        sprite.unloadFont();
+    tft.drawString(tempString, width / 2, 13 + 13);*/
 
-        drawBmpFromFile(model->getForecastIconFileName(dayIndex), 15, 13 + 13, &sprite);
+    tft.unloadFont();
 
-        sprite.pushSprite(x, y);
-        sprite.deleteSprite();
-    }
+    drawBmpFromFile(model->getForecastIconFileName(dayIndex), x + 5, y + 30);
+  }
 }

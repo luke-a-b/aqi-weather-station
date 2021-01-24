@@ -1,38 +1,24 @@
 #include "WebConfig.h"
 #include "DataSources/LocalTempSensorSource.h"
 
-const char RootHtml[] PROGMEM = "<!DOCTYPE html><html lang='en'><head><meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'/>\
-    <title>ESP Weather Station</title></head><body><p>Hello to {thing_name}!</p>\
-    <p>IP address: {ip}<br>\
-    Subnet mask: {mask}<br>\
-    Gateway: {gateway}<br>\
-    MAC address: {mac}</p>\
-    <p>SSID: {ssid}<br>\
-    RSSI: {rssi} dBm<br>\
-    Signal: {signal}%</p>\
-    <p>Go to <a href='config'>configure page</a> to change settings.</p>\
-    </body></html>\n";
-
 WebConfig::WebConfig(Config *config) : 
     config(config), 
     drd(DRD_TIMEOUT, DRD_ADDRESS), 
     server(80), 
     iotWebConf("ESP Weather Station", &dnsServer, &server, NULL, CONFIG_VERSION)
 {
-    if (!this->drd.detectDoubleReset())
-    {
-        this->iotWebConf.skipApStartup();
-    }
 }
 
 void WebConfig::begin(std::function<void(IPAddress)> wifiConnectedHandler, std::function<void(const char *, const char *)> connectApHandler, std::function<void(const char *)> connectWifiHandler)
 {
-    config->addCustomWebParams(&iotWebConf);
+    this->config->addCustomWebParams(&iotWebConf);
 
-    this->iotWebConf.setFormValidator([this] { return this->config->validateWebParams(&this->server); });
+    this->iotWebConf.setHtmlFormatProvider(&(this->htmlFormatProvider));
+    this->iotWebConf.setFormValidator([this](iotwebconf::WebRequestWrapper* webRequestWrapper) { 
+        return this->config->validateWebParams(webRequestWrapper); 
+    });
     this->iotWebConf.setWifiConnectionCallback([wifiConnectedHandler, this] {
-        Serial.print(F("Local IP: "));
-        Serial.println(WiFi.localIP().toString());
+        DEBUG_PRINTF("Local IP: "); DEBUG_PRINTLN(WiFi.localIP().toString());
         config->print();
         wifiConnectedHandler(WiFi.localIP());
     });
@@ -44,10 +30,19 @@ void WebConfig::begin(std::function<void(IPAddress)> wifiConnectedHandler, std::
         connectWifiHandler(ssid);
         return this->connectWifi(ssid, password);
     });
-    this->iotWebConf.setConfigSavedCallback([] {
+    this->iotWebConf.setConfigSavedCallback([this] {
+        DEBUG_PRINTFLN("Rebooting after 1 second.");
+        this->iotWebConf.delay(1000);
         ESP.restart();
     });
+    this->iotWebConf.setupUpdateServer(
+    [this](const char* updatePath) { this->httpUpdater.setup(&server, updatePath); },
+    [this](const char* userName, char* password) { this->httpUpdater.updateCredentials(userName, password); });
 
+    if (!this->drd.detectDoubleReset())
+    {
+        this->iotWebConf.skipApStartup();
+    }
     this->iotWebConf.init();
 
     this->server.on("/", [this] { this->handleRoot(); });
@@ -61,63 +56,18 @@ void WebConfig::update()
     this->drd.loop();
 }
 
-// boolean WebConfig::validateAqiUrl(String url)
-// {
-//     return url.length() == 0 || // accepting empty url
-//            (url.startsWith(F("http://")) || url.startsWith(F("https://"))) && url.endsWith(F("/data.json"));
-// }
-
-// boolean WebConfig::formValidator()
-// {
-//     Serial.println(F("Validating form."));
-//     boolean valid = true;
-
-//     if (this->server->arg(this->OwmApiKeyParam->getId()).length() == 0)
-//     {
-//         this->OwmApiKeyParam->errorMessage = "Please provide OWM API key.";
-//         valid = false;
-//     }
-
-//     if (this->server->arg(this->OwmLocationIdParam->getId()).length() == 0)
-//     {
-//         this->OwmLocationIdParam->errorMessage = "Please provide OWM location ID.";
-//         valid = false;
-//     }
-
-//     const char *aqiError = "Please profide URL in following format http://...../data.json or https://...../data.json";
-//     if (!validateAqiUrl(this->server->arg(this->AqiStationUrlParam1->getId())))
-//     {
-//         this->AqiStationUrlParam1->errorMessage = aqiError;
-//         valid = false;
-//     }
-//     if (!validateAqiUrl(this->server->arg(this->AqiStationUrlParam2->getId())))
-//     {
-//         this->AqiStationUrlParam2->errorMessage = aqiError;
-//         valid = false;
-//     }
-//     if (!validateAqiUrl(this->server->arg(this->AqiStationUrlParam3->getId())))
-//     {
-//         this->AqiStationUrlParam3->errorMessage = aqiError;
-//         valid = false;
-//     }
-
-//     return valid;
-// }
-
-boolean WebConfig::connectAp(const char *apName, const char *password)
+bool WebConfig::connectAp(const char *apName, const char *password)
 {
-    Serial.println(F("Creating access point"));
-    Serial.print(F("SSID:     "));
-    Serial.println(apName);
-    Serial.print(F("Password: "));
-    Serial.println(password);
+    DEBUG_PRINTFLN("Creating access point");
+    DEBUG_PRINTF("SSID:     "); DEBUG_PRINTLN(apName);
+    DEBUG_PRINTF("Password: "); DEBUG_PRINTLN(password);
     return WiFi.softAP(apName, password);
 }
 
 void WebConfig::connectWifi(const char *ssid, const char *password)
 {
-    Serial.print(F("Connecting to WiFi "));
-    Serial.println(ssid);
+    
+    DEBUG_PRINTF("Connecting to WiFi "); DEBUG_PRINTLN(ssid);
     wifi_set_sleep_type(NONE_SLEEP_T); //LIGHT_SLEEP_T and MODE_SLEEP_T
     WiFi.begin(ssid, password);
 }
@@ -141,17 +91,36 @@ void WebConfig::handleRoot()
     {
         return;
     }
-    String s = FPSTR(RootHtml);
-    s.replace(F("{thing_name}"), String(this->iotWebConf.getThingName()));
+    String content = htmlFormatProvider.getHead();
+    String br = F("<br>");
+    content.replace(F("{v}"), String(this->iotWebConf.getThingName()));
+    content += htmlFormatProvider.getStyle();
+    content += htmlFormatProvider.getHeadEnd();
+    content += FPSTR(INTL_HTML_GREETINGS);
+    content.replace(F("{v}"), String(this->iotWebConf.getThingName()));
+
     if (WiFi.status() == WL_CONNECTED)
     {
-        s.replace(F("{ip}"), WiFi.localIP().toString());
-        s.replace(F("{gateway}"), WiFi.gatewayIP().toString());
-        s.replace(F("{mask}"), WiFi.subnetMask().toString());
-        s.replace(F("{mac}"), WiFi.macAddress());
-        s.replace(F("{ssid}"), WiFi.SSID());
-        s.replace(F("{rssi}"), String(WiFi.RSSI()));
-        s.replace(F("{signal}"), String(WebConfig::calcWiFiSignalQuality(WiFi.RSSI())));
+        content += String(FPSTR(INTL_IP_ADDRESS)) + WiFi.localIP().toString() + br;
+        content += String(FPSTR(INTL_GATEWAY)) + WiFi.gatewayIP().toString() + br;
+        content += String(FPSTR(INTL_SUBNET_MASK)) + WiFi.subnetMask().toString() + br;
+        content += String(FPSTR(INTL_MAC_ADDRESS)) + WiFi.macAddress() + br;
+        content += String(FPSTR(INTL_SSID)) + WiFi.SSID() + br;
+        content += String(FPSTR(INTL_RSSI)) + String(WiFi.RSSI()) + String(FPSTR(CONST_UNIT_DBM)) + br;
+        content += String(FPSTR(INTL_WIFI_QALITY)) + String(WebConfig::calcWiFiSignalQuality(WiFi.RSSI())) + "%" +  br;
     }
-    this->server.send(200, "text/html", s);
+    content += FPSTR(INTL_HTML_CONFIG_LINK);
+    content += String(F("<p><b>Credits:</b>")) + br;
+    content += String(F("<a href=\"https://openweathermap.org/\">OpenWeather</a>")) + br;
+    content += String(F("<a href=\"http://vclouds.deviantart.com/gallery/#/d2ynulp\">Deviant Art</a>")) + br;
+    content += String(F("<a href=\"https://nettigo.pl/\">Nettigo</a>")) + br;
+    content += String(F("<a href=\"https://sensor.community/\">sensor.community</a>")) + br;
+    content += String(F("<a href=\"https://aqi.eco/\">aqi.eco</a>")) + br;
+    content += String(F("<a href=\"https://blog.squix.org/\">Squix</a>")) + br;
+    content += String(F("<a href=\"https://github.com/Bodmer\">Bodmer</a>")) + br;
+    content += String(F("<a href=\"https://github.com/trekawek\">Tomek Rekawek</a>")) + br;
+    content += String(F("</p>"));
+    content += htmlFormatProvider.getEnd();
+
+    this->server.send(200, "text/html", content);
 }

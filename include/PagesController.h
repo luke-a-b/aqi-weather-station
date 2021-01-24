@@ -9,6 +9,8 @@
 #include "Pages/AqiPage.h"
 #include "Pages/SplashScreenPage.h"
 #include "Pages/AboutPage.h"
+#include "Pages/CurrentWeatherDetailPage.h"
+#include "Pages/ForecastPage.h"
 #include "CommandsHanler.h"
 
 class PagesController : public TouchObserver, public ModelChangeObserver, public CommandsHanler
@@ -49,6 +51,8 @@ private:
     MainPage mainPage;
     AqiPage aqiPage;
     AboutPage aboutPage;
+    CurrentWeatherDetailPage currentWeatherDetailPage;
+    ForecastPage forecastPage;
 
     uint8_t currentAqiPage = 0;
 

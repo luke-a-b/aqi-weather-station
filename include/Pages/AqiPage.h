@@ -8,13 +8,6 @@
 #include "Widgets/WifiStatusWidget.h"
 
 
-typedef struct {
-  const uint16_t *data;
-  uint16_t width;
-  uint16_t height;
-  uint8_t  dataSize;
-} tImage;
-
 class AqiPage : public Page
 {
 public:
@@ -48,7 +41,6 @@ private:
     static void fillGradientRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
 
     static uint16_t gradientColor(uint16_t x, uint16_t y);
-    void drawBitmap(uint16_t x, uint16_t y, const tImage *image);
     void drawLevels(uint16_t x, uint16_t y);
     void drawIndicator(float percent, uint16_t x, uint16_t y);
     void fillArc(uint16_t x, uint16_t y, uint16_t r, float startAngle, float endAngle, uint32_t color);

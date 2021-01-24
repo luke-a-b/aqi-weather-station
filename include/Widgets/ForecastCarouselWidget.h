@@ -4,7 +4,6 @@
 #include "Carousel.h"
 #include "Widgets/Widget.h"
 #include "Models/ForecastModel.h"
-#include "Widgets/ForecastWidget.h"
 
 #define FRAMES_NUMBER 2
 

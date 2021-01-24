@@ -13,15 +13,16 @@ class Fetcher {
     public:
         Fetcher(Config *config, DisplayModel* displayModel, ModelChangeObserver* modelChangeObserver);
         ~Fetcher();
-        void begin();
+        void updateAll();
         void update(uint32_t now);
 
     private:
-        void updateAqiData();
+        void updateAqiData(uint8_t station);
         void updateOwmData();
-        void updateTimeData();
+        bool updateTimeData();
         void updateSensorsData();
         long lastAqiUpdate = 0;
+        uint8_t lastAqiStation = 0;
         long lastWeatherUpdate = 0;
         long lastSensorUpdate = 0;
         long lastTimeUpdate = 0;

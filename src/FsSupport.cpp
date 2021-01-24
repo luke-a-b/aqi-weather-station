@@ -34,7 +34,7 @@ uint32_t FsSupport::listFiles(String dirName, uint8_t depth)
         }
         else
         {
-            Serial.print(fileName);
+            Serial.print(dirName + fileName);
             int spaces = 25 - fileName.length(); // Tabulate nicely
             while (spaces--)
                 Serial.print(" ");

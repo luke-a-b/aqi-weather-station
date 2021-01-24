@@ -3,13 +3,19 @@
 
 #include <Arduino.h>
 
-class ForecastModel
-{
+class ForecastModel {
 public:
-    virtual boolean isMetricSelected() = 0;
-    virtual String getForecastIconFileName(uint8_t dayIndex) = 0;
-    virtual float getForecastTemp(uint8_t dayIndex) = 0;
-    virtual String getForecastWeekDayName(uint8_t dayIndex) = 0;
+  virtual boolean isMetricSelected() = 0;
+  virtual String getForecastIconFileName(uint8_t dayIndex) = 0;
+  virtual float getForecastTemp(uint8_t dayIndex) = 0;
+  virtual struct tm *getForecastTime(uint8_t dayIndex) = 0;
+  virtual String getForecastDescription(uint8_t dayIndex) = 0;
+  virtual float getForecastTempMin(uint8_t dayIndex) = 0;
+  virtual float getForecastTempMax(uint8_t dayIndex) = 0;
+  virtual float getForecastHumidity(uint8_t dayIndex) = 0;
+  virtual float getForecastPressure(uint8_t dayIndex) = 0;
+  virtual float getForecastWindSpeed(uint8_t dayIndex) = 0;
+  virtual String getForecastWindDirection(uint8_t dayIndex) = 0;
 };
 
 #endif

@@ -33,6 +33,7 @@ public: // implements ModelChangeObserver
     virtual void notifyLocalTempUpdated(boolean status) {}
 
 protected:
+    void drawLabelValue(uint8_t line, uint8_t labelX, uint8_t valueX, String label, String value);
     virtual void draw() {}
     boolean isVisible = false;
     Widget *widgets[MAX_WIDGETS];

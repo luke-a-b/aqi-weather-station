@@ -4,22 +4,20 @@
 #include <Arduino.h>
 #include <DHT.h>
 
-typedef struct LocalTempSensorDataModel
-{
-    float temp = NAN;
-    float humidity = NAN;
+typedef struct LocalTempSensorDataModel {
+  float temp = NAN;
+  float humidity = NAN;
 } LocalTempSensorDataModel;
 
-class LocalTempSensorSource
-{
+class LocalTempSensorSource {
 public:
-    LocalTempSensorSource(String sensorType, boolean isMetric);
-    ~LocalTempSensorSource();
-    boolean updateCurrent(LocalTempSensorDataModel *data);
-private:
-    boolean isMetric;
-    DHT* dht = nullptr;
+  LocalTempSensorSource(String sensorType, boolean isMetric);
+  ~LocalTempSensorSource();
+  boolean updateCurrent(LocalTempSensorDataModel *data);
 
+private:
+  boolean isMetric;
+  DHT *dht = nullptr;
 };
 
 #endif

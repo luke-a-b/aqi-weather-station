@@ -9,10 +9,12 @@ public:
     AboutPage(CommandsHanler* commandsHandler);
 
 protected:
+    virtual void update(uint32_t now);
     virtual void draw();
     virtual bool handleTouchOff(uint16_t x, uint16_t y, uint16_t z);
 
-    void drawLabelValue(uint8_t line, String label, String value);
+private: 
+    uint32_t lastUpdate = 0;
 
 };
 

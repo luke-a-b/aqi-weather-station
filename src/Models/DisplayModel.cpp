@@ -1,210 +1,280 @@
+#include <LittleFS.h>
 #include "Models/DisplayModel.h"
 #include "assert.h"
 
-DisplayModel::DisplayModel(Config *config) : config(config), aqiData { config, config, config }
-{
+DisplayModel::DisplayModel(Config *config)
+    : config(config), aqiData{config, config, config} {}
+
+struct tm *DisplayModel::getLocalTime(time_t time) {
+  return localtime(&time);
 }
 
-String DisplayModel::getTimeString(time_t time)
-{
-    struct tm *timeinfo = localtime(&time);
-    String hour = isClock24hSytyle() ? String(timeinfo->tm_hour) : String((timeinfo->tm_hour + 11) % 12 + 1); // take care of noon and midnight
-    String minutes = timeinfo->tm_min >= 10 ? String(timeinfo->tm_min) : "0" + String(timeinfo->tm_min);
-    return hour + ":" + minutes;
+struct tm *DisplayModel::getSunsetTime() {
+  return getLocalTime(currentWeather.sunset + currentWeather.timezone_offset);
 }
 
-String DisplayModel::getSunTranslation()
-{
-    return config->getSunTranslation();
+struct tm *DisplayModel::getSunriseTime() {
+  return getLocalTime(currentWeather.sunrise + currentWeather.timezone_offset);
 }
 
-String DisplayModel::getMoonTranslation()
-{
-    return config->getMoonTranslation();
+struct tm *DisplayModel::getMoonriseTime() {
+  return getLocalTime(moonData.rise + currentWeather.timezone_offset);
 }
 
-
-String DisplayModel::getSunsetTime()
-{
-    return getTimeString(currentWeather.sunset);
+struct tm *DisplayModel::getMoonsetTime() {
+  return getLocalTime(moonData.set + currentWeather.timezone_offset);
 }
 
-String DisplayModel::getSunriseTime()
-{
-    return getTimeString(currentWeather.sunrise);
+String DisplayModel::getMoonIconFileName() {
+  String path = FPSTR(MOON_ICON_PATH);
+  String icon = String(moonData.age * 23.00 / 29.53, 0);
+  icon.trim();
+  path.replace(F("{icon}"), icon);
+  return path;
 }
 
-String DisplayModel::getMoonriseTime()
-{
-    return getTimeString(moonData.rise);
+uint8_t DisplayModel::getMoonPhase() { return moonData.phase; }
+
+boolean DisplayModel::isAqiDataValid() {
+  boolean to_return = false;
+  for (uint8_t i = 0; i < MAX_AQI_STATIONS; i++) {
+    to_return |= aqiData[i].isAqiDataValid();
+  }
+  return to_return;
 }
 
-String DisplayModel::getMoonsetTime()
-{
-    return getTimeString(moonData.set);
-}
-
-String DisplayModel::getMoonIconFileName()
-{
-    float iconsCount = 23.00;
-    // approximate moon age
-    String iconNo = String(moonData.age * iconsCount / 29.53, 0);
-    iconNo.trim();
-    return "/moon/moon" + iconNo + ".bmp";
-}
-
-String DisplayModel::getMoonPhaseName()
-{
-    return config->getMoonPhaseName(moonData.phase.index);
-}
-
-String DisplayModel::getCurrentTime()
-{
-    return getTimeString(time(nullptr));
-}
-
-boolean DisplayModel::isAqiDataValid()
-{
-    boolean to_return = false;
-    for (uint8_t i = 0; i < MAX_AQI_STATIONS; i++)
-    {
-        to_return |= aqiData[i].isAqiDataValid();
+uint16_t DisplayModel::getAqiPercentMax() {
+  uint16_t to_return = 0;
+  for (uint8_t i = 0; i < MAX_AQI_STATIONS; i++) {
+    if (aqiData[i].isAqiDataValid()) {
+      to_return = aqiData[i].getAqiPercentMax();
+      break;
     }
-    return to_return;
+  }
+  return to_return;
 }
 
-uint16_t DisplayModel::getAqiPercentMax()
-{
-    uint16_t to_return;
-    for (uint8_t i = 0; i < MAX_AQI_STATIONS; i++)
-    {
-        if (aqiData[i].isAqiDataValid()) 
-        {
-            to_return = aqiData[i].getAqiPercentMax();
-            break;
-        }
+boolean DisplayModel::isClock24hSytyle() {
+  return config->isClock24hStyleSelected();
+}
+
+boolean DisplayModel::isClockSilhouetteEnabled() {
+  return config->isClockSilhouetteEnabled();
+}
+
+String DisplayModel::getAqiLevelIconFileName() {
+  String icon = "";
+  for (uint8_t i = 0; i < MAX_AQI_STATIONS; i++) {
+    if (aqiData[i].isAqiDataValid()) {
+      int aqi = int(aqiData[i].getAqiLevel());
+      icon = String(aqi == 0 ? 1 : aqi);
+      String path = FPSTR(AQI_ICON_PATH);
+      path.replace(F("{icon}"), String(aqi == 0 ? 1 : aqi));
+      return path;
     }
-    return to_return;
+  }
+  String path = FPSTR(AQI_ICON_PATH);
+  path.replace(F("{icon}"), F("na"));
+  return path;
 }
 
-String DisplayModel::getCurrentDate()
-{
-    time_t now = time(nullptr);
-    struct tm *timeinfo = localtime(&now);
-    return config->getWeekDayName(timeinfo->tm_wday) + " " +
-           timeinfo->tm_mday + " " +
-           config->getMonthName(timeinfo->tm_mon) + " " +
-           String(timeinfo->tm_year + 1900);
-}
-
-boolean DisplayModel::isClock24hSytyle()
-{
-    return config->isClock24hStyleSelected();
-}
-
-boolean DisplayModel::isClockSilhouetteEnabled()
-{
-    return config->isClockSilhouetteEnabled();
-}
-
-String DisplayModel::getClockPeriod()
-{
-    time_t now = time(nullptr);
-    struct tm *timeinfo = localtime(&now);
-    return timeinfo->tm_hour >= 12 ? "pm" : "am";
-}
-
-String DisplayModel::getAqiLevelIconFileName()
-{
-    String icon = "";
-    for (uint8_t i = 0; i < MAX_AQI_STATIONS; i++)
-    {
-        if (aqiData[i].isAqiDataValid()) 
-        {
-            int aqi = int(aqiData[i].getAqiLevel());
-            icon = String(aqi == 0 ? 1 : aqi);
-            break;
-        }
+String DisplayModel::getWeatherIconFileName(String path, String icon) {
+  path.replace(F("{folder}"), config->getMeteoIcons());
+  if (icon != "") {
+    path.replace(F("{icon}"), icon);
+    if (!LittleFS.exists(path)) {
+      String currentIcon = icon;
+      icon.replace("n", "d"); // use day icon instead
+      path.replace(currentIcon, icon);
+      if (!LittleFS.exists(path)) {
+        path.replace(icon, F("na"));
+      }
     }
-    return "/aqi/" + icon + ".bmp";
+  } else {
+    path.replace(F("{icon}"), F("na"));
+  }
+  return path;
 }
 
-String DisplayModel::getAqiNaLevelIconFileName()
-{
-    return "/aqi/na.bmp";
+void DisplayModel::updateWeatherIconsPaths() {
+  if (currentWeather.icon.indexOf(".bmp") < 0) // check if not already done
+  {
+    currentWeather.icon = getWeatherIconFileName(FPSTR(WEATHER_ICON_LARGE_PATH),
+                                                 currentWeather.icon);
+  }
+  for (uint8_t i = 0; i < MAX_DAYS; i++) {
+    if (dailyForecasts.icon[i].indexOf(".bmp") < 0) // check if not already done
+    {
+      dailyForecasts.icon[i] = getWeatherIconFileName(
+          FPSTR(WEATHER_ICON_SMALL_PATH), dailyForecasts.icon[i]);
+    }
+  }
 }
 
-String DisplayModel::getCurrentWeatherIconFileName()
-{
-    return "/weather/115x79/" + currentWeather.icon + ".bmp";
+String DisplayModel::getCurrentWeatherIconFileName() {
+  return currentWeather.icon;
 }
 
-String DisplayModel::getCurrentWeatherCityName()
-{
-    return currentWeather.cityName;
+String DisplayModel::getCurrentWeatherCityName() {
+  return config->getOwmLocationName();
 }
 
-float DisplayModel::getCurrentWeatherTemp()
-{
-    return aqiData[0].isAqiDataValid() ? aqiData[0].getAqiTemp() : currentWeather.temp;
+float DisplayModel::getCurrentWeatherTemp() { return currentWeather.temp; }
+
+float DisplayModel::getTodayMinTemp() { return dailyForecasts.temp_min[0]; }
+
+float DisplayModel::getTodayMaxTemp() { return dailyForecasts.temp_max[0]; }
+
+float DisplayModel::getCurrentFeelsLikeTemp() {
+  return currentWeather.feels_like;
 }
 
-String DisplayModel::getCurrentWeatherDescription()
-{
-    return currentWeather.description;
+uint8_t DisplayModel::getCurrentClouds() { return currentWeather.clouds; }
+
+float DisplayModel::getCurrentWindSpeed() { return currentWeather.wind_speed; }
+
+float DisplayModel::getCurrentWindGust() { return currentWeather.wind_gust; }
+
+uint16_t DisplayModel::getCurrentWindDeg() { return currentWeather.wind_deg; }
+
+float DisplayModel::getCurrentRain() { return currentWeather.rain; }
+
+float DisplayModel::getCurrentSnow() { return currentWeather.snow; }
+
+float DisplayModel::getCurrentUvi() { return currentWeather.uvi; }
+
+uint32_t DisplayModel::getCurrentVisiblity() {
+  return currentWeather.visibility;
 }
 
-uint16_t DisplayModel::getCurrentWeatherPressure()
-{
-    return currentWeather.pressure;
+float DisplayModel::getCurrentDewPoint() { return currentWeather.dew_point; }
+
+String DisplayModel::getCurrentWeatherDescription() {
+  return currentWeather.description;
 }
 
-uint8_t DisplayModel::getCurrentWeatherHumidity()
-{
-    return currentWeather.humidity;
+uint16_t DisplayModel::getCurrentWeatherPressure() {
+  return currentWeather.pressure;
 }
 
-boolean DisplayModel::isLocalTempSensorEnabled()
-{
-    return config->isLocalTempSensorEnabled();
+uint8_t DisplayModel::getCurrentWeatherHumidity() {
+  return currentWeather.humidity;
 }
 
-float DisplayModel::getLocalTemp()
-{
-    return localTempSensor.temp;
+boolean DisplayModel::isLocalTempSensorEnabled() {
+  return config->isLocalTempSensorEnabled();
 }
 
-float DisplayModel::getLocalHumidity()
-{
-    return localTempSensor.humidity;
+float DisplayModel::getLocalTemp() { return localTempSensor.temp; }
+
+float DisplayModel::getLocalHumidity() { return localTempSensor.humidity; }
+
+uint32_t DisplayModel::getObservationTime() { return currentWeather.dt; }
+
+String DisplayModel::getCurrentAirQuality() {
+  String to_return = FPSTR(INTL_NO_DATA);
+  for (uint8_t i = 0; i < MAX_AQI_STATIONS; i++) {
+    if (aqiData[i].isAqiDataValid()) {
+      int index = int(aqiData[i].getAqiLevel());
+      switch (index) {
+      case 0:
+      case 1:
+        to_return = FPSTR(INTL_AQI_GOOD);
+        break;
+      case 2:
+        to_return = FPSTR(INTL_AQI_MODERATE);
+        break;
+      case 3:
+        to_return = FPSTR(INTL_AQI_UNHEALTHY_SENSITIVE);
+        break;
+      case 4:
+        to_return = FPSTR(INTL_AQI_UNHEALTHY);
+        break;
+      case 5:
+        to_return = FPSTR(INTL_AQI_VERY_UNHEALTHY);
+        break;
+      case 6:
+        to_return = FPSTR(INTL_AQI_HAZARDOUS);
+        break;
+      default:
+        break;
+      }
+      break;
+    }
+  }
+  return to_return;
 }
 
-uint32_t DisplayModel::getObservationTime()
-{
-    return currentWeather.observationTime;
+boolean DisplayModel::isMetricSelected() { return config->isMetricSelected(); }
+
+String DisplayModel::getForecastIconFileName(uint8_t dayIndex) {
+  assert(dayIndex < MAX_DAYS);
+  return dailyForecasts.icon[dayIndex];
 }
 
-boolean DisplayModel::isMetricSelected()
-{
-    return config->isMetricSelected();
+float DisplayModel::getForecastTemp(uint8_t dayIndex) {
+  assert(dayIndex < MAX_DAYS);
+  return (dailyForecasts.temp_day[dayIndex]);
 }
 
-String DisplayModel::getForecastIconFileName(uint8_t dayIndex)
-{
-    assert(dayIndex < MAX_FORECASTS);
-    return "/weather/60x41/" + String(dayIndex < MAX_FORECASTS ? forecasts[dayIndex].icon : "") + ".bmp";
+struct tm *DisplayModel::getForecastTime(uint8_t dayIndex) {
+  assert(dayIndex < MAX_DAYS);
+  return getLocalTime(dailyForecasts.dt[dayIndex] +
+                      currentWeather.timezone_offset);
 }
 
-float DisplayModel::getForecastTemp(uint8_t dayIndex)
-{
-    assert(dayIndex < MAX_FORECASTS);
-    return (forecasts[dayIndex].temp);
+String DisplayModel::getForecastDescription(uint8_t dayIndex) {
+  assert(dayIndex < MAX_DAYS);
+  return (dailyForecasts.description[dayIndex]);
 }
 
-String DisplayModel::getForecastWeekDayName(uint8_t dayIndex)
-{
-    assert(dayIndex < MAX_FORECASTS);
-    time_t time = forecasts[dayIndex].observationTime; // TODO: + currentWeather.timezone;
-    struct tm *timeinfo = localtime(&time);
-    return config->getWeekDayName(timeinfo->tm_wday);
+float DisplayModel::getForecastTempMin(uint8_t dayIndex) {
+  assert(dayIndex < MAX_DAYS);
+  return (dailyForecasts.temp_min[dayIndex]);
+}
+
+float DisplayModel::getForecastTempMax(uint8_t dayIndex) {
+  assert(dayIndex < MAX_DAYS);
+  return (dailyForecasts.temp_max[dayIndex]);
+}
+
+float DisplayModel::getForecastHumidity(uint8_t dayIndex) {
+  assert(dayIndex < MAX_DAYS);
+  return (dailyForecasts.humidity[dayIndex]);
+}
+
+float DisplayModel::getForecastPressure(uint8_t dayIndex) {
+  assert(dayIndex < MAX_DAYS);
+  return (dailyForecasts.pressure[dayIndex]);
+}
+
+float DisplayModel::getForecastWindSpeed(uint8_t dayIndex) {
+  assert(dayIndex < MAX_DAYS);
+  return (dailyForecasts.wind_speed[dayIndex]);
+}
+
+String DisplayModel::getForecastWindDirection(uint8_t dayIndex) {
+  assert(dayIndex < MAX_DAYS);
+  int windAngle = (dailyForecasts.wind_deg[dayIndex] + 22.5) / 45;
+  if (windAngle > 7)
+    windAngle = 0;
+  switch (windAngle) {
+  default:
+  case 0:
+    return "⇑";
+  case 1:
+    return "⇗";
+  case 2:
+    return "⇒";
+  case 3:
+    return "⇘";
+  case 4:
+    return "⇓";
+  case 5:
+    return "⇙";
+  case 6:
+    return "⇐";
+  case 7:
+    return "⇖";
+  }
 }

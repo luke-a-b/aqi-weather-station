@@ -9,6 +9,13 @@
 
 extern TFT_eSPI tft;
 
+typedef struct {
+  const uint16_t *data;
+  uint16_t width;
+  uint16_t height;
+  uint8_t  dataSize;
+} tImage;
+
 class Widget
 {
 public:
@@ -26,6 +33,7 @@ public:
     virtual void update(uint32_t now) {}
     virtual void redraw() = 0;
 
+    static void drawBitmap(uint16_t x, uint16_t y, const tImage *image);
     static void drawBmpFromFile(const String filename, uint8_t x, uint16_t y, TFT_eSprite *sprite = nullptr);
     // static void setTexFormat(const String fontName, uint8_t datum, uint16_t fgcolor, uint16_t bgcolor, uint16_t padding);
     static void setTexFormat(const GFXfont *font, uint8_t datum, uint16_t fgcolor, uint16_t bgcolor, uint16_t padding);

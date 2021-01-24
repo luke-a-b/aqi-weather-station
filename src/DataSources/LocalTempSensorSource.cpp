@@ -11,7 +11,7 @@ LocalTempSensorSource::LocalTempSensorSource(String sensorType, boolean isMetric
         sensorType == LocalTempSensorValues[DHT21_IDX] ||
         sensorType == LocalTempSensorValues[DHT22_IDX])
     {
-        Serial.print(F("Creating internal sensor: DHT")); Serial.println(sensorType.substring(3));
+        DEBUG_PRINTF("Creating internal sensor: DHT"); DEBUG_PRINTLN(sensorType.substring(3));
         dht = new DHT(DHTPIN, sensorType.substring(3).toInt());
         dht->begin();
     }
@@ -29,7 +29,7 @@ boolean LocalTempSensorSource::updateCurrent(LocalTempSensorDataModel *data)
     data->humidity = NAN;
     if (dht != nullptr)
     {
-        Serial.println(F("Updating local DHT sensor data..."));
+        DEBUG_PRINTFLN("Updating local DHT sensor data...");
         data->temp = dht->readTemperature(!isMetric);
         data->humidity = dht->readHumidity();
     }
