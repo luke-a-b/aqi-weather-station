@@ -59,7 +59,9 @@ const char INTL_LOCATAION_NAME[] PROGMEM = "Nazwa lokalizacji";
 const char INTL_LOCATAION_NAME_PLACEHOLDER[] PROGMEM =
     "Nazwa będzie wyświetlana na głownym ekranie";
 const char INTL_AQI_SETTINGS[] PROGMEM = "Ustawienia Air Quality Index";
-const char INTL_AQI_URL[] PROGMEM = "Adres URL AQI ";
+const char INTL_AQI_URL_1[] PROGMEM = "Adres URL AQI 1";
+const char INTL_AQI_URL_2[] PROGMEM = "Adres URL AQI 2";
+const char INTL_AQI_URL_3[] PROGMEM = "Adres URL AQI 3";
 const char INTL_AQI_REFRESH_INTERVAL[] PROGMEM =
     "Interwał odświeżania danych AQI w sekundach";
 const char INTL_LOCAL_TEMP_SETTINGS[] PROGMEM =

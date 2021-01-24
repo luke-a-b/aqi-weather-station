@@ -94,14 +94,8 @@ void Fetcher::updateOwmData() {
 bool Fetcher::updateTimeData() {
   DEBUG_PRINTF("Updating NTP time...");
   time_t now;
-  String NtpServer0 = config->getNtpServer(0) != "" ? config->getNtpServer(0)
-                                                    : "0.pool.ntp.org";
-  String NtpServer1 =
-      config->getNtpServer(1) != "" ? config->getNtpServer(1) : NtpServer0;
-  String NtpServer2 =
-      config->getNtpServer(2) != "" ? config->getNtpServer(2) : NtpServer0;
   configTime(displayModel->getCurrentWeather()->timezone_offset, 0,
-             NtpServer0.c_str(), NtpServer1.c_str(), NtpServer2.c_str());
+             NTP_SERVER_0, NTP_SERVER_1, NTP_SERVER_2);
   uint8_t timeout = 0;
   while ((now = time(nullptr)) < NTP_MIN_VALID_EPOCH && timeout < 100) {
     DEBUG_PRINTF(".");

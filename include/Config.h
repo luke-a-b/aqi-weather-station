@@ -7,13 +7,6 @@
 
 #define CONFIG_VERSION "0.1"
 
-#define MAX_LOGOS 5
-#define TIME_LOGO_UPDATE 3 // update every 3 seconds
-
-#define NTP_MIN_VALID_EPOCH 1533081600 // August 1st, 2018
-
-#define MAX_AQI_STATIONS 3
-
 #define DEBUG_ON
 
 #ifdef DEBUG_ON
@@ -32,14 +25,19 @@
 #endif
 #endif
 
-const char NTP_SERVER_0[] PROGMEM = "0.pool.ntp.org";
-const char NTP_SERVER_1[] PROGMEM = "1.pool.ntp.org";
-const char NTP_SERVER_2[] PROGMEM = "2.pool.ntp.org";
+#define MAX_LOGOS 5
+#define TIME_LOGO_UPDATE 3 // update every 3 seconds
 
-// translations
+#define NTP_MIN_VALID_EPOCH 1533081600 // August 1st, 2018
+
+#define MAX_AQI_STATIONS 3
+
+#define NTP_SERVER_0 "0.pool.ntp.org"
+#define NTP_SERVER_1 "1.pool.ntp.org"
+#define NTP_SERVER_2 "2.pool.ntp.org"
+
 #if defined(INTL_EN)
 #include "Lang/Intl_EN.h"
-
 #elif defined(INTL_PL)
 #include "Lang/Intl_PL.h"
 #else
@@ -69,47 +67,43 @@ const char WEATHER_ICON_SMALL_PATH[] PROGMEM =
 
 ////////////////
 
+#define PARAM(name, size, class)                                               \
+  char name[size] = {0};                                                       \
+  class *name##Param = nullptr
+
 #define CHECKBOX_PARAM_LEN 16
-#define CHECKBOX_PARAM(name, label, default)                                   \
-  char name[CHECKBOX_PARAM_LEN] = {0};                                         \
-  String name##Label = label;                                                  \
-  IotWebConfCheckboxParameter name##Param = {name##Label.c_str(), #name, name, \
-                                             CHECKBOX_PARAM_LEN, default};
+#define CHECKBOX_PARAM(name)                                                   \
+  PARAM(name, CHECKBOX_PARAM_LEN, IotWebConfCheckboxParameter)
+#define CREATE_CHECKBOX_PARAM(name, label, default)                            \
+  this->name##Param = new IotWebConfCheckboxParameter(                         \
+      label, PSTR(#name), this->name, CHECKBOX_PARAM_LEN, default)
 
 #define NUMBER_PARAM_LEN 16
-#define NUMBER_PARAM(name, label, default, placeholder, custom)                \
-  char name[NUMBER_PARAM_LEN] = {0};                                           \
-  String name##Label = label;                                                  \
-  IotWebConfNumberParameter name##Param = {                                    \
-      name##Label.c_str(), #name, name, NUMBER_PARAM_LEN, default,             \
-      placeholder,         custom};
+#define NUMBER_PARAM(name)                                                     \
+  PARAM(name, NUMBER_PARAM_LEN, IotWebConfNumberParameter)
+#define CREATE_NUMBER_PARAM(name, label, default, placeholder, custom)         \
+  this->name##Param = new IotWebConfNumberParameter(                           \
+      label, PSTR(#name), this->name, NUMBER_PARAM_LEN, default,               \
+      PSTR(placeholder), PSTR(custom))
 
 #define TEXT_PARAM_LEN 128
-#define TEXT_PARAM(name, label, default, placeholder)                          \
-  char name[TEXT_PARAM_LEN] = {0};                                             \
-  String name##Label = label;                                                  \
-  String name##Placeholder = placeholder;                                      \
-  IotWebConfTextParameter name##Param = {                                      \
-      name##Label.c_str(), #name,   name,                                      \
-      TEXT_PARAM_LEN,      default, name##Placeholder.c_str()};
+#define TEXT_PARAM(name) PARAM(name, TEXT_PARAM_LEN, IotWebConfTextParameter)
+#define CREATE_TEXT_PARAM(name, label, default, placeholder)                   \
+  this->name##Param = new IotWebConfTextParameter(                             \
+      label, PSTR(#name), this->name, TEXT_PARAM_LEN, default, placeholder);
 
 #define SELECT_PARAM_LEN 32
-#define SELECT_PARAM(name, label, values, names, default)                      \
-  char name[SELECT_PARAM_LEN] = {0};                                           \
-  String name##Label = label;                                                  \
-  IotWebConfSelectParameter name##Param = {name##Label.c_str(),                \
-                                           #name,                              \
-                                           name,                               \
-                                           SELECT_PARAM_LEN,                   \
-                                           (char *)values,                     \
-                                           (char *)names,                      \
-                                           sizeof(values) / SELECT_PARAM_LEN,  \
-                                           SELECT_PARAM_LEN,                   \
-                                           default};
+#define SELECT_PARAM(name)                                                     \
+  PARAM(name, SELECT_PARAM_LEN, IotWebConfSelectParameter)
+#define CREATE_SELECT_PARAM(name, label, values, names, default)               \
+  this->name##Param = new IotWebConfSelectParameter(                           \
+      label, PSTR(#name), this->name, SELECT_PARAM_LEN, (char *)values,        \
+      (char *)names, sizeof(values) / SELECT_PARAM_LEN, SELECT_PARAM_LEN,      \
+      default)
 
-#define GROUP_PARAM(name, label)                                               \
-  String name##Label = label;                                                  \
-  IotWebConfParameterGroup group##name = {name##Label.c_str()};
+#define GROUP_PARAM(name) IotWebConfParameterGroup *group##name
+#define CREATE_GROUP_PARAM(name, label)                                        \
+  this->group##name = new IotWebConfParameterGroup(label)
 
 enum LocalTempSensorValuesIdx {
   DHT11_IDX = 1,
@@ -125,76 +119,37 @@ const char LocalTempSensorNames[][SELECT_PARAM_LEN] = {
 const char MeteoIconsValues[][SELECT_PARAM_LEN] = {"vc", "owm"};
 const char MeteoIconsNames[][SELECT_PARAM_LEN] = {"VClouds", "Open Weateher"};
 
-typedef struct {
-  CHECKBOX_PARAM(IsMetricSelected, FPSTR(INTL_IS_METRIC_SYSTEM), true)
-  CHECKBOX_PARAM(IsClock24hStyleSelected, FPSTR(INTL_IS_CLOCK_24H_STYLE), true)
-  CHECKBOX_PARAM(IsClockSilhouetteEnabled,
-                 FPSTR(INTL_IS_CLOCK_SILHOUETTE_ENABLED), true)
-  NUMBER_PARAM(BacklightTimeout, FPSTR(INTL_BACKLIGHT_TIMEOUT), "0", "0..600",
-               "min='0' max='600' step='1'")
-  SELECT_PARAM(MeteoIcons, FPSTR(INTL_METEO_ICONS), MeteoIconsValues,
-               MeteoIconsNames, MeteoIconsValues[0])
-
-  GROUP_PARAM(Owm, FPSTR(INTL_OWM_SETTINGS))
-  TEXT_PARAM(LocationName, FPSTR(INTL_LOCATAION_NAME), nullptr,
-             FPSTR(INTL_LOCATAION_NAME_PLACEHOLDER))
-  TEXT_PARAM(OwmApiKey, FPSTR(INTL_OWM_API_KEY), nullptr,
-             FPSTR(INTL_OWM_API_KEY_PLACEHOLDER))
-  NUMBER_PARAM(OwmLatitude, FPSTR(INTL_OWM_LATITUDE), nullptr, "51.06809",
-               "step='0.00001'")
-  NUMBER_PARAM(OwmLongitude, FPSTR(INTL_OWM_LONGITUDE), nullptr, "16.97507",
-               "step='0.00001'")
-  NUMBER_PARAM(OwmRefreshInterval, FPSTR(INTL_OWM_REFRESH_INTERVAL), "240",
-               "1..600", "min='1' max='600' step='1'")
-
-  GROUP_PARAM(Aqi, FPSTR(INTL_AQI_SETTINGS))
-  TEXT_PARAM(AqiStationUrl1, String(FPSTR(INTL_AQI_URL)) + "1", nullptr, "")
-  TEXT_PARAM(AqiStationUrl2, String(FPSTR(INTL_AQI_URL)) + "2", nullptr, "")
-  TEXT_PARAM(AqiStationUrl3, String(FPSTR(INTL_AQI_URL)) + "3", nullptr, "")
-  NUMBER_PARAM(AqiRefreshInterval, FPSTR(INTL_AQI_REFRESH_INTERVAL), "120",
-               "0..600", "min='0' max='600' step='1'")
-
-  GROUP_PARAM(Sensor, FPSTR(INTL_LOCAL_TEMP_SETTINGS))
-  SELECT_PARAM(LocalTempSensorType, FPSTR(INTL_LOCAL_TEMP_SENSOR_TYPE),
-               LocalTempSensorValues, LocalTempSensorNames, nullptr)
-  NUMBER_PARAM(LocalTempSensorRefreshInterval,
-               FPSTR(INTL_LOCAL_TEMP_REFRESH_INTERVAL), "60", "0..600",
-               "min='0' max='600' step='1'")
-
-} Params;
-
 class Config {
 public:
-  Config() {}
+  Config();
 
   void addCustomWebParams(IotWebConf *iotWebConf);
 
   boolean isMetricSelected() {
-    return params.IsMetricSelectedParam.isChecked();
+    return this->IsMetricSelectedParam->isChecked();
   }
   boolean isClock24hStyleSelected() {
-    return params.IsClock24hStyleSelectedParam.isChecked();
+    return this->IsClock24hStyleSelectedParam->isChecked();
   }
   boolean isClockSilhouetteEnabled() {
-    return params.IsClockSilhouetteEnabledParam.isChecked();
+    return this->IsClockSilhouetteEnabledParam->isChecked();
   }
   boolean isLocalTempSensorEnabled() {
-    return strcmp(params.LocalTempSensorType, LocalTempSensorValues[0]) != 0;
+    return strcmp(this->LocalTempSensorType, LocalTempSensorValues[0]) != 0;
   }
-  char *getLocalTempSensorType() { return params.LocalTempSensorType; }
-  char *getMeteoIcons() { return params.MeteoIcons; }
-  int getBacklightTimeout() { return atoi(params.BacklightTimeout); }
-  char *getOwmApiKey() { return params.OwmApiKey; }
-  char *getOwmLocationName() { return params.LocationName; }
-  char *getOwmLatitude() { return params.OwmLatitude; }
-  char *getOwmLongitude() { return params.OwmLongitude; }
-  int getOwmRefreshInterval() { return atoi(params.OwmRefreshInterval); }
-  int getAqiRefreshInterval() { return atoi(params.AqiRefreshInterval); }
+  char *getLocalTempSensorType() { return this->LocalTempSensorType; }
+  char *getMeteoIcons() { return this->MeteoIcons; }
+  int getBacklightTimeout() { return atoi(this->BacklightTimeout); }
+  char *getOwmApiKey() { return this->OwmApiKey; }
+  char *getOwmLocationName() { return this->LocationName; }
+  char *getOwmLatitude() { return this->OwmLatitude; }
+  char *getOwmLongitude() { return this->OwmLongitude; }
+  int getOwmRefreshInterval() { return atoi(this->OwmRefreshInterval); }
+  int getAqiRefreshInterval() { return atoi(this->AqiRefreshInterval); }
   int getLocalTempSensorRefreshInterval() {
-    return atoi(params.LocalTempSensorRefreshInterval);
+    return atoi(this->LocalTempSensorRefreshInterval);
   }
 
-  String getNtpServer(uint8_t serverNo);
   char *getAqiStationUrl(uint8_t no);
 
   bool validateWebParams(iotwebconf::WebRequestWrapper *webRequestWrapper);
@@ -202,7 +157,28 @@ public:
   void print();
 
 private:
-  Params params;
+  CHECKBOX_PARAM(IsMetricSelected);
+  CHECKBOX_PARAM(IsClock24hStyleSelected);
+  CHECKBOX_PARAM(IsClockSilhouetteEnabled);
+  NUMBER_PARAM(BacklightTimeout);
+  SELECT_PARAM(MeteoIcons);
+
+  GROUP_PARAM(Owm);
+  TEXT_PARAM(LocationName);
+  TEXT_PARAM(OwmApiKey);
+  NUMBER_PARAM(OwmLatitude);
+  NUMBER_PARAM(OwmLongitude);
+  NUMBER_PARAM(OwmRefreshInterval);
+
+  GROUP_PARAM(Aqi);
+  TEXT_PARAM(AqiStationUrl1);
+  TEXT_PARAM(AqiStationUrl2);
+  TEXT_PARAM(AqiStationUrl3);
+  NUMBER_PARAM(AqiRefreshInterval);
+
+  GROUP_PARAM(Sensor);
+  SELECT_PARAM(LocalTempSensorType);
+  NUMBER_PARAM(LocalTempSensorRefreshInterval);
 
   bool validateAqiUrl(String url);
 };
