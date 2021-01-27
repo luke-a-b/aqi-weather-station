@@ -10,19 +10,19 @@ struct tm *DisplayModel::getLocalTime(time_t time) {
 }
 
 struct tm *DisplayModel::getSunsetTime() {
-  return getLocalTime(currentWeather.sunset + currentWeather.timezone_offset);
+  return getLocalTime(currentWeather.sunset);
 }
 
 struct tm *DisplayModel::getSunriseTime() {
-  return getLocalTime(currentWeather.sunrise + currentWeather.timezone_offset);
+  return getLocalTime(currentWeather.sunrise);
 }
 
 struct tm *DisplayModel::getMoonriseTime() {
-  return getLocalTime(moonData.rise + currentWeather.timezone_offset);
+  return getLocalTime(moonData.rise);
 }
 
 struct tm *DisplayModel::getMoonsetTime() {
-  return getLocalTime(moonData.set + currentWeather.timezone_offset);
+  return getLocalTime(moonData.set);
 }
 
 String DisplayModel::getMoonIconFileName() {
