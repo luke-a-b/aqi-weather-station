@@ -136,22 +136,34 @@ boolean AqiDataSource::parseUrl(String url, AqiDataModel *data) {
   return true;
 }
 
-void AqiDataSource::whitespace(char c) { DEBUG_PRINTF("JSON whitespace"); }
+void AqiDataSource::whitespace(char c) {
+#ifdef SHOW_JSON
+  DEBUG_PRINTF("JSON whitespace");
+#endif
+}
 
-void AqiDataSource::startDocument() { DEBUG_PRINTF("JSON Start Document"); }
+void AqiDataSource::startDocument() {
+#ifdef SHOW_JSON
+  DEBUG_PRINTF("JSON Start Document");
+#endif
+}
 
 void AqiDataSource::key(const char *key) {
+#ifdef SHOW_JSON
   DEBUG_PRINTF("JSON key: ");
   DEBUG_PRINTLN(key);
+#endif
   currentKey = key;
 }
 
 void AqiDataSource::value(const char *val) {
   String value = val;
+#ifdef SHOW_JSON
   DEBUG_PRINTF("JSON key: ");
   DEBUG_PRINT(currentKey);
   DEBUG_PRINTF(", value: ");
   DEBUG_PRINTLN(value);
+#endif
   assert(data != nullptr);
   // Sensor.Community parse
   if (currentArray == "sensordatavalues") {
@@ -203,28 +215,42 @@ void AqiDataSource::value(const char *val) {
 }
 
 void AqiDataSource::startArray() {
+#ifdef SHOW_JSON
   DEBUG_PRINTFLN("JSON start array");
+#endif
   currentArray = currentKey;
 }
 
 void AqiDataSource::endArray() {
+#ifdef SHOW_JSON
   DEBUG_PRINTFLN("JSON end array");
+#endif
   currentArray = "";
 }
 
 void AqiDataSource::startObject() {
+#ifdef SHOW_JSON
   DEBUG_PRINTFLN("JSON start object");
+#endif
   currentParent = currentKey;
 }
 
 void AqiDataSource::endObject() {
+#ifdef SHOW_JSON
   DEBUG_PRINTFLN("JSON end object");
+#endif
   currentParent = "";
 }
 
-void AqiDataSource::endDocument() { DEBUG_PRINTFLN("JSON end document"); }
+void AqiDataSource::endDocument() {
+#ifdef SHOW_JSON
+  DEBUG_PRINTFLN("JSON end document");
+#endif
+}
 
 void AqiDataSource::error(const char *message) {
+#ifdef SHOW_JSON
   DEBUG_PRINTF("JSON error: ");
   DEBUG_PRINTLN(message);
+#endif
 }
