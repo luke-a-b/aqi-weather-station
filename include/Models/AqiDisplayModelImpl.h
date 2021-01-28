@@ -28,8 +28,15 @@ public:
   virtual boolean isAqiDataValid() { return !isnan(aqiData.index); }
   virtual String getAqiStaionName() {
     String stationUrl = aqiData.stationUrl;
-    return stationUrl.substring(stationUrl.indexOf("://") + 3,
-                                stationUrl.indexOf("/data.json"));
+    uint8_t idx;
+    if ((idx = stationUrl.indexOf(F(".aqi.eco"))) > 0) {
+      return stationUrl.substring(idx + 9, stationUrl.indexOf(F("/data.json")));
+    } else if ((idx = stationUrl.indexOf(F(".local"))) > 0) {
+      return stationUrl.substring(stationUrl.indexOf(F("://")) + 3, idx);
+    } else {
+      return stationUrl.substring(stationUrl.indexOf(F("://")) + 3,
+                                  stationUrl.indexOf(F("/data.json")));
+    }
   }
   AqiDataModel *getAqiDataModel() { return &aqiData; }
   virtual boolean isMetricSelected() { return config->isMetricSelected(); }
