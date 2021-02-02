@@ -26,23 +26,9 @@ public:
   virtual float getAqiLevel() { return aqiData.index; }
   virtual float getAqiTemp() { return aqiData.temp; }
   virtual boolean isAqiDataValid() { return !isnan(aqiData.index); }
-  virtual String getAqiStaionName() {
-    String stationUrl = aqiData.stationUrl;
-    uint8_t idx;
-    if ((idx = stationUrl.indexOf(F(".aqi.eco"))) > 0) {
-      return stationUrl.substring(idx + 9, stationUrl.indexOf(F("/data.json")));
-    } else if ((idx = stationUrl.indexOf(F(".local"))) > 0) {
-      return stationUrl.substring(stationUrl.indexOf(F("://")) + 3, idx);
-    } else {
-      return stationUrl.substring(stationUrl.indexOf(F("://")) + 3,
-                                  stationUrl.indexOf(F("/data.json")));
-    }
-  }
+  virtual char *getAqiStaionUrl() { return aqiData.stationUrl; }
   AqiDataModel *getAqiDataModel() { return &aqiData; }
   virtual boolean isMetricSelected() { return config->isMetricSelected(); }
-  virtual uint16_t getAqiRefreshInterval() {
-    return config->getAqiRefreshInterval();
-  }
 
 private:
   Config *config;

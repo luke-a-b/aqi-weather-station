@@ -22,16 +22,7 @@ bool ForecastPage::handleTouchOff(uint16_t x, uint16_t y, uint16_t z) {
   return false;
 }
 
-void ForecastPage::update(uint32_t now) {
-  if (this->isVisible) {
-    /*if (lastObservationTime != model->getObservationTime())
-    {
-        tft.fillScreen(TFT_BLACK);
-        draw();
-    }*/
-  }
-  Page::update(now);
-}
+void ForecastPage::notifyWeatherUpdated() { draw(); }
 
 void ForecastPage::draw() {
   if (isVisible) {

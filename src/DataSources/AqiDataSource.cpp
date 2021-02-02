@@ -44,9 +44,9 @@ void AqiDataSource::updateCurrent(AqiDataModel *data) {
       DEBUG_PRINTF("[HTTP] ");
       this->client = new WiFiClient();
     }
-    http->begin(*client, this->host, this->port, this->path, this->https);
     DEBUG_PRINTF("GET -> ");
     DEBUG_PRINTLN(this->host + this->path);
+    http->begin(*client, this->host, this->port, this->path, this->https);
 
     http->setReuse(false);
     // start connection and send HTTP header
@@ -100,8 +100,8 @@ void AqiDataSource::updateCurrent(AqiDataModel *data) {
   }
 }
 
-boolean AqiDataSource::parseUrl(String url, AqiDataModel *data) {
-  assert(data != nullptr);
+boolean AqiDataSource::parseUrl(String url, AqiDataModel * /*data*/) {
+  // assert(data != nullptr);
 
   int index = url.indexOf(':');
   if (index < 0) {

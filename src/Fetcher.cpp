@@ -11,10 +11,6 @@ Fetcher::Fetcher(Config *config, DisplayModel *displayModel,
   assert(config != nullptr);
   assert(displayModel != nullptr);
   assert(modelChangeObserver != nullptr);
-  if (config->isLocalTempSensorEnabled()) {
-    this->localTemSensorSource = new LocalTempSensorSource(
-        config->getLocalTempSensorType(), config->isMetricSelected());
-  }
 }
 
 Fetcher::~Fetcher() {
@@ -29,6 +25,11 @@ void Fetcher::updateAll() {
     tryNo++;
   for (uint8_t i = 0; i < MAX_AQI_STATIONS; i++)
     updateAqiData(i);
+  if (this->localTemSensorSource == nullptr &&
+      config->isLocalTempSensorEnabled()) {
+    this->localTemSensorSource = new LocalTempSensorSource(
+        config->getLocalTempSensorType(), config->isMetricSelected());
+  }
   updateSensorsData();
   uint32_t now = millis();
   this->lastAqiUpdate = now;
@@ -63,14 +64,19 @@ void Fetcher::update(uint32_t now) {
 void Fetcher::updateAqiData(uint8_t station) {
   AqiDataModel *model = displayModel->getAqiDataModelAt(station);
   if (model->stationUrl[0] != 0) {
+    modelChangeObserver->notifyAqiUpdateStart(
+        displayModel->getAqiDisplayModelAt(station));
     DEBUG_PRINTF("Updating AQI: ");
     DEBUG_PRINTLN(model->stationUrl);
     currentAqiClient.updateCurrent(model);
+    modelChangeObserver->notifyAqiUpdated(
+        displayModel->getAqiDisplayModelAt(station));
   }
 }
 
 void Fetcher::updateOwmData() {
   DEBUG_PRINTFLN("Updating weather conditions from OpenWeather...");
+  modelChangeObserver->notifyWeatherUpdateStart();
   OW_Weather *ow = new OW_Weather(); // Weather forecast library instance
   // On the ESP8266 (only) the library by default uses BearSSL, another option
   // is to use AXTLS
@@ -89,6 +95,7 @@ void Fetcher::updateOwmData() {
   ow = nullptr;
 
   displayModel->updateWeatherIconsPaths();
+  modelChangeObserver->notifyWeatherUpdated();
 }
 
 bool Fetcher::updateTimeData() {
@@ -115,23 +122,29 @@ bool Fetcher::updateTimeData() {
   DEBUG_PRINTLN(displayModel->getCurrentWeather()->timezone_offset);
 
   DEBUG_PRINTFLN("Updating Moon data...");
-  SunMoonCalc::Moon *moonData = displayModel->getMoonData();
   // 'now' has to be UTC, lat/lng in degrees not raadians
   SunMoonCalc *smCalc =
       new SunMoonCalc(now, displayModel->getCurrentWeather()->lat,
                       displayModel->getCurrentWeather()->lon);
-  *moonData = smCalc->calculateSunAndMoonData().moon;
+  SunMoonCalc::Moon moonData = smCalc->calculateSunAndMoonData().moon;
+  MoonData *moon = displayModel->getMoonData();
+  moon->age = moonData.age;
+  moon->phase = moonData.phase;
+  moon->rise = moonData.rise;
+  moon->set = moonData.set;
   delete smCalc;
   smCalc = nullptr;
+
+  modelChangeObserver->notifyAstronomyUpdated();
 
   return true;
 }
 
 void Fetcher::updateSensorsData() {
   if (localTemSensorSource != nullptr) {
-    DEBUG_PRINTFLN("Updating local temp sensor data...");
-    modelChangeObserver->notifyLocalTempUpdated(
-        localTemSensorSource->updateCurrent(
-            displayModel->getLocalTempSensor()));
+    if (localTemSensorSource->updateCurrent(
+            displayModel->getLocalTempSensor())) {
+      modelChangeObserver->notifyLocalTempUpdated();
+    }
   }
 }

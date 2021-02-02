@@ -5,20 +5,21 @@
 #include "Models/CurrentWeatherModel.h"
 #include "Widgets/CurrentWeatherWidget.h"
 
-class CurrentWeatherDetailPage : public Page
-{
+class CurrentWeatherDetailPage : public Page {
 public:
-    CurrentWeatherDetailPage(CurrentWeatherModel *model, CommandsHanler* commandsHandler);
+  CurrentWeatherDetailPage(CurrentWeatherModel *model,
+                           CommandsHanler *commandsHandler);
+
 protected:
-    virtual bool handleTouchOff(uint16_t x, uint16_t y, uint16_t z);
-    virtual void update(uint32_t now);
+  virtual bool handleTouchOff(uint16_t x, uint16_t y, uint16_t z);
+  virtual void notifyWeatherUpdated();
+
 private:
-    virtual void draw();
+  virtual void draw();
 
-    CurrentWeatherModel* model;
-    CurrentWeatherWidget currentWeatherWidget;
-    uint32_t lastObservationTime = 0;
-
+  CurrentWeatherModel *model;
+  CurrentWeatherWidget currentWeatherWidget;
+  uint32_t lastObservationTime = 0;
 };
 
 #endif

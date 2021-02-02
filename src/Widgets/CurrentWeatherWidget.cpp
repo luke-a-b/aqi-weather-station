@@ -5,7 +5,7 @@ CurrentWeatherWidget::CurrentWeatherWidget(CurrentWeatherModel *model,
                                            uint16_t y)
     : Widget(0, y, 240, 93), model(model) {}
 
-void CurrentWeatherWidget::update(uint32_t now) {
+void CurrentWeatherWidget::update() {
   if (lastCurrentTemp != model->getCurrentWeatherTemp() ||
       lastObservationTime != model->getObservationTime()) {
     redraw();

@@ -36,7 +36,6 @@ void AqiPage::resetValues() {
   this->lastAqiTemp = 1000;
   this->lastAqiHumidity = 101;
   this->lastAqiPressure = 0;
-  this->aqiStationName = "";
 }
 
 void AqiPage::setModel(AqiDisplayModel *model) {
@@ -47,11 +46,15 @@ void AqiPage::setModel(AqiDisplayModel *model) {
   }
 }
 
-void AqiPage::update(uint32_t now) {
-  if (!this->isVisible)
-    return;
-  Page::update(now);
-  draw();
+void AqiPage::notifyAqiUpdateStart(AqiDisplayModel *model) {
+  if (this->model == model && this->isVisible) {
+    tft.fillCircle(30, 6, 3, TFT_YELLOW);
+  }
+}
+
+void AqiPage::notifyAqiUpdated(AqiDisplayModel *model) {
+  if (this->model == model)
+    draw();
 }
 
 void AqiPage::setVisible(boolean visible) {
@@ -120,16 +123,38 @@ void AqiPage::draw() {
     printTextUnit(String(model->getAqiPressure()), "hPa", 90, y);
   }
 
-  if (this->initialDraw || this->aqiStationName != model->getAqiStaionName()) {
-    this->aqiStationName = model->getAqiStaionName();
+  if (this->initialDraw) {
+    String stationName = model->getAqiStaionUrl();
+    int8_t idx = stationName.indexOf(F(".local"));
+    if (idx > 0) {
+      stationName =
+          stationName.substring(stationName.indexOf(F("://")) + 3, idx);
+    } else {
+      idx = stationName.indexOf(F(".aqi.eco"));
+      if (idx > 0) {
+        stationName = stationName.substring(
+            idx + 9, stationName.indexOf(F("/data.json")));
+      } else {
+        stationName =
+            stationName.substring(stationName.indexOf(F("://")) + 3,
+                                  stationName.indexOf(F("/data.json")));
+      }
+    }
+
     tft.setTextDatum(BC_DATUM);
     tft.loadFont(ArialBold14);
     tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
-    tft.setCursor(120 - strlen(this->aqiStationName.c_str()) / 2 * 8, y + 35);
-    tft.print(this->aqiStationName);
+    tft.setCursor(120 - strlen(stationName.c_str()) / 2 * 8, y + 35);
+    tft.print(stationName);
   }
 
   tft.unloadFont();
+
+  if (isnan(model->getAqiLevel())) {
+    tft.fillCircle(30, 6, 3, TFT_RED);
+  } else {
+    tft.fillCircle(30, 6, 3, TFT_GREEN);
+  }
 
   if (this->initialDraw) {
     y = 100;

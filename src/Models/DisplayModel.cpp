@@ -115,7 +115,7 @@ String DisplayModel::getCurrentWeatherIconFileName() {
   return currentWeather.icon;
 }
 
-String DisplayModel::getCurrentWeatherCityName() {
+char *DisplayModel::getCurrentWeatherCityName() {
   return config->getOwmLocationName();
 }
 

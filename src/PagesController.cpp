@@ -105,14 +105,14 @@ bool PagesController::handleSwipeUp() {
   return true;
 }
 
-void PagesController::notifyAqiUpdateStart() {
+void PagesController::notifyAqiUpdateStart(AqiDisplayModel *model) {
   assert(currentPage != nullptr);
-  currentPage->notifyAqiUpdateStart();
+  currentPage->notifyAqiUpdateStart(model);
 }
 
-void PagesController::notifyAqiUpdated(boolean status) {
+void PagesController::notifyAqiUpdated(AqiDisplayModel *model) {
   assert(currentPage != nullptr);
-  currentPage->notifyAqiUpdated(status);
+  currentPage->notifyAqiUpdated(model);
 }
 
 void PagesController::notifyWeatherUpdateStart() {
@@ -120,12 +120,17 @@ void PagesController::notifyWeatherUpdateStart() {
   currentPage->notifyWeatherUpdateStart();
 }
 
-void PagesController::notifyWeatherUpdated(boolean status) {
+void PagesController::notifyWeatherUpdated() {
   assert(currentPage != nullptr);
-  currentPage->notifyWeatherUpdated(status);
+  currentPage->notifyWeatherUpdated();
 }
 
-void PagesController::notifyLocalTempUpdated(boolean status) {
+void PagesController::notifyLocalTempUpdated() {
   assert(currentPage != nullptr);
-  currentPage->notifyLocalTempUpdated(status);
+  currentPage->notifyLocalTempUpdated();
+}
+
+void PagesController::notifyAstronomyUpdated() {
+  assert(currentPage != nullptr);
+  currentPage->notifyAstronomyUpdated();
 }

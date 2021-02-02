@@ -41,34 +41,33 @@ const char INTL_PHASE_5[] PROGMEM = "Garbaty";
 const char INTL_PHASE_6[] PROGMEM = "Trzecia Kwadra";
 const char INTL_PHASE_7[] PROGMEM = "Malejący Sierp";
 
-const char INTL_IS_METRIC_SYSTEM[] PROGMEM = "Czy używać system metrzyczny?";
-const char INTL_IS_CLOCK_24H_STYLE[] PROGMEM = "Czy używać stylu zegara 24h?";
-const char INTL_IS_CLOCK_SILHOUETTE_ENABLED[] PROGMEM =
-    "Czy włączyć poświatę zegara?";
-const char INTL_BACKLIGHT_TIMEOUT[] PROGMEM = "Czas podświetlenia ekranu";
-const char INTL_METEO_ICONS[] PROGMEM = "Ikony meteo";
-const char INTL_OWM_SETTINGS[] PROGMEM = "Ustawienia Open Weather Map";
-const char INTL_OWM_API_KEY[] PROGMEM = "Klucz Open Weather Map API";
-const char INTL_OWM_API_KEY_PLACEHOLDER[] PROGMEM =
-    "Pobierz tutaj: https://docs.thingpulse.com/how-tos/openweathermap-key/";
-const char INTL_OWM_LATITUDE[] PROGMEM = "Szerokość geograficzna";
-const char INTL_OWM_LONGITUDE[] PROGMEM = "Długość geograficzna";
-const char INTL_OWM_REFRESH_INTERVAL[] PROGMEM =
-    "Interwał odświeżania dany Open Weather Map w sekundach";
-const char INTL_LOCATAION_NAME[] PROGMEM = "Nazwa lokalizacji";
-const char INTL_LOCATAION_NAME_PLACEHOLDER[] PROGMEM =
-    "Nazwa będzie wyświetlana na głownym ekranie";
-const char INTL_AQI_SETTINGS[] PROGMEM = "Ustawienia Air Quality Index";
-const char INTL_AQI_URL_1[] PROGMEM = "Adres URL AQI 1";
-const char INTL_AQI_URL_2[] PROGMEM = "Adres URL AQI 2";
-const char INTL_AQI_URL_3[] PROGMEM = "Adres URL AQI 3";
-const char INTL_AQI_REFRESH_INTERVAL[] PROGMEM =
-    "Interwał odświeżania danych AQI w sekundach";
-const char INTL_LOCAL_TEMP_SETTINGS[] PROGMEM =
+// below strings are not to be stored in PROGMEM
+const char INTL_IS_METRIC_SYSTEM[] = "Czy używać system metrzyczny?";
+const char INTL_IS_CLOCK_24H_STYLE[] = "Czy używać stylu zegara 24h?";
+const char INTL_IS_CLOCK_SILHOUETTE_ENABLED[] = "Czy włączyć poświatę zegara?";
+const char INTL_BACKLIGHT_TIMEOUT[] = "Czas podświetlenia ekranu";
+const char INTL_METEO_ICONS[] = "Ikony meteo";
+const char INTL_OWM_SETTINGS[] = "Ustawienia Open Weather Map";
+const char INTL_OWM_API_KEY[] = "Klucz Open Weather Map API";
+const char INTL_OWM_LATITUDE[] = "Szerokość geograficzna";
+const char INTL_OWM_LONGITUDE[] = "Długość geograficzna";
+const char INTL_OWM_REFRESH_INTERVAL[] = "Interwał odświeżania danych OWM";
+const char INTL_LOCATAION_NAME[] = "Nazwa lokalizacji";
+const char INTL_AQI_SETTINGS[] = "Ustawienia Air Quality Index";
+const char INTL_AQI_URL[] = "Adres URL AQI";
+const char INTL_AQI_REFRESH_INTERVAL[] = "Interwał odświeżania danych AQI";
+const char INTL_LOCAL_TEMP_SETTINGS[] =
     "Ustawienie lokalnego sensora temperatury/wilgotności";
-const char INTL_LOCAL_TEMP_SENSOR_TYPE[] PROGMEM = "Typ podłączonego sensora: ";
-const char INTL_LOCAL_TEMP_REFRESH_INTERVAL[] PROGMEM =
-    "Interwał odświeżania lokalnego sensora temperatury w sekundach";
+const char INTL_LOCAL_TEMP_SENSOR_TYPE[] = "Typ podłączonego sensora";
+const char INTL_LOCAL_TEMP_REFRESH_INTERVAL[] =
+    "Interwał odświeżania lokalnego sensora";
+
+const char INTL_MQTT_SETTINGS[] = "Ustawienia MQTT";
+const char INTL_MQTT_HOST[] = "Adres serwera MQTT";
+const char INTL_MQTT_PORT[] = "Port serwera MQTT";
+const char INTL_MQTT_TOPIC[] = "Temat MQTT";
+
+//////////////////////
 
 const char INTL_OWM_API_KEY_ERROR[] PROGMEM =
     "Wprowadź prawidłowy klucz OWM API";

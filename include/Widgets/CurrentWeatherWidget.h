@@ -4,24 +4,22 @@
 #include "Widgets/Widget.h"
 #include "Models/CurrentWeatherModel.h"
 
-class CurrentWeatherWidget : public Widget
-{
+class CurrentWeatherWidget : public Widget {
 public:
-    CurrentWeatherWidget(CurrentWeatherModel *model, uint16_t y);
+  CurrentWeatherWidget(CurrentWeatherModel *model, uint16_t y);
+  void update();
 
 protected:
-    virtual void redraw();
-    virtual void update(uint32_t now);
+  virtual void redraw();
 
 private:
-    CurrentWeatherModel *model;
-    uint32_t lastObservationTime;
-    float lastLocalTemp = NAN;
-    float lastCurrentTemp = NAN;
+  CurrentWeatherModel *model;
+  uint32_t lastObservationTime;
+  float lastLocalTemp = NAN;
+  float lastCurrentTemp = NAN;
 
-    void redrawLocalTemp();
-    void redrawCurrentTemp();
-
+  void redrawLocalTemp();
+  void redrawCurrentTemp();
 };
 
 #endif

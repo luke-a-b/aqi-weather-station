@@ -15,18 +15,17 @@ bool CurrentWeatherDetailPage::handleTouchOff(uint16_t x, uint16_t y,
   return true;
 }
 
-void CurrentWeatherDetailPage::update(uint32_t now) {
+void CurrentWeatherDetailPage::notifyWeatherUpdated() {
   if (this->isVisible) {
     if (lastObservationTime != model->getObservationTime()) {
       tft.fillScreen(TFT_BLACK);
       draw();
     }
   }
-  Page::update(now);
 }
 
 void CurrentWeatherDetailPage::draw() {
-  if (isVisible) {
+  if (this->isVisible) {
     lastObservationTime = model->getObservationTime();
     tft.drawFastHLine(10, 100, 220, TFT_DARKGREY);
     Widget::setTexFormat(ArialBold14, TC_DATUM, TFT_WHITE, TFT_BLACK,

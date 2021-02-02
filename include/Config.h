@@ -7,8 +7,6 @@
 
 #define CONFIG_VERSION "0.1"
 
-#define DEBUG_ON
-
 #ifdef DEBUG_ON
 #ifndef DEBUG_PRINTF
 #define DEBUG_PRINTF(V) Serial.print(F(V))
@@ -25,10 +23,12 @@
 #endif
 #endif
 
-#define MAX_LOGOS 5
+#define MAX_LOGOS 5        // number of bitmaps in logos data folder
 #define TIME_LOGO_UPDATE 3 // update every 3 seconds
 
-#define NTP_MIN_VALID_EPOCH 1533081600 // August 1st, 2018
+#define NTP_MIN_VALID_EPOCH 1609459200 // January 1st, 2021
+
+#define TIME_UPDATE_INTERVAL 3600L // 60*60 -> update every hour
 
 #define MAX_AQI_STATIONS 3
 
@@ -67,43 +67,38 @@ const char WEATHER_ICON_SMALL_PATH[] PROGMEM =
 
 ////////////////
 
-#define PARAM(name, size, class)                                               \
-  char name[size] = {0};                                                       \
-  class *name##Param = nullptr
-
 #define CHECKBOX_PARAM_LEN 16
-#define CHECKBOX_PARAM(name)                                                   \
-  PARAM(name, CHECKBOX_PARAM_LEN, IotWebConfCheckboxParameter)
-#define CREATE_CHECKBOX_PARAM(name, label, default)                            \
-  this->name##Param = new IotWebConfCheckboxParameter(                         \
-      label, PSTR(#name), this->name, CHECKBOX_PARAM_LEN, default)
+#define CHECKBOX_PARAM(name, label, default)                                   \
+  char name[CHECKBOX_PARAM_LEN] = {0};                                         \
+  IotWebConfCheckboxParameter name##Param = {label, #name, name,               \
+                                             CHECKBOX_PARAM_LEN, default}
 
 #define NUMBER_PARAM_LEN 16
-#define NUMBER_PARAM(name)                                                     \
-  PARAM(name, NUMBER_PARAM_LEN, IotWebConfNumberParameter)
-#define CREATE_NUMBER_PARAM(name, label, default, placeholder, custom)         \
-  this->name##Param = new IotWebConfNumberParameter(                           \
-      label, PSTR(#name), this->name, NUMBER_PARAM_LEN, default,               \
-      PSTR(placeholder), PSTR(custom))
+#define NUMBER_PARAM(name, label, default, placeholder, custom)                \
+  char name[NUMBER_PARAM_LEN] = {0};                                           \
+  IotWebConfNumberParameter name##Param = {                                    \
+      label, #name, name, NUMBER_PARAM_LEN, default, placeholder, custom}
 
 #define TEXT_PARAM_LEN 128
-#define TEXT_PARAM(name) PARAM(name, TEXT_PARAM_LEN, IotWebConfTextParameter)
-#define CREATE_TEXT_PARAM(name, label, default, placeholder)                   \
-  this->name##Param = new IotWebConfTextParameter(                             \
-      label, PSTR(#name), this->name, TEXT_PARAM_LEN, default, placeholder);
+#define TEXT_PARAM(name, label, default, placeholder)                          \
+  char name[TEXT_PARAM_LEN] = {0};                                             \
+  IotWebConfTextParameter name##Param = {label,          #name,   name,        \
+                                         TEXT_PARAM_LEN, default, placeholder}
 
 #define SELECT_PARAM_LEN 32
-#define SELECT_PARAM(name)                                                     \
-  PARAM(name, SELECT_PARAM_LEN, IotWebConfSelectParameter)
-#define CREATE_SELECT_PARAM(name, label, values, names, default)               \
-  this->name##Param = new IotWebConfSelectParameter(                           \
-      label, PSTR(#name), this->name, SELECT_PARAM_LEN, (char *)values,        \
-      (char *)names, sizeof(values) / SELECT_PARAM_LEN, SELECT_PARAM_LEN,      \
-      default)
+#define SELECT_PARAM(name, label, values, names, default)                      \
+  char name[SELECT_PARAM_LEN] = {0};                                           \
+  IotWebConfSelectParameter name##Param = {label,                              \
+                                           #name,                              \
+                                           name,                               \
+                                           SELECT_PARAM_LEN,                   \
+                                           (char *)values,                     \
+                                           (char *)names,                      \
+                                           sizeof(values) / SELECT_PARAM_LEN,  \
+                                           SELECT_PARAM_LEN,                   \
+                                           default}
 
-#define GROUP_PARAM(name) IotWebConfParameterGroup *group##name
-#define CREATE_GROUP_PARAM(name, label)                                        \
-  this->group##name = new IotWebConfParameterGroup(label)
+#define GROUP_PARAM(name, label) IotWebConfParameterGroup group##name = {label}
 
 enum LocalTempSensorValuesIdx {
   DHT11_IDX = 1,
@@ -111,6 +106,7 @@ enum LocalTempSensorValuesIdx {
   DHT21_IDX,
   DHT22_IDX
 };
+
 const char LocalTempSensorValues[][SELECT_PARAM_LEN] = {"---", "DHT11", "DHT12",
                                                         "DHT21", "DHT22"};
 const char LocalTempSensorNames[][SELECT_PARAM_LEN] = {
@@ -121,18 +117,14 @@ const char MeteoIconsNames[][SELECT_PARAM_LEN] = {"VClouds", "Open Weateher"};
 
 class Config {
 public:
-  Config();
-
   void addCustomWebParams(IotWebConf *iotWebConf);
 
-  boolean isMetricSelected() {
-    return this->IsMetricSelectedParam->isChecked();
-  }
+  boolean isMetricSelected() { return this->IsMetricSelectedParam.isChecked(); }
   boolean isClock24hStyleSelected() {
-    return this->IsClock24hStyleSelectedParam->isChecked();
+    return this->IsClock24hStyleSelectedParam.isChecked();
   }
   boolean isClockSilhouetteEnabled() {
-    return this->IsClockSilhouetteEnabledParam->isChecked();
+    return this->IsClockSilhouetteEnabledParam.isChecked();
   }
   boolean isLocalTempSensorEnabled() {
     return strcmp(this->LocalTempSensorType, LocalTempSensorValues[0]) != 0;
@@ -157,28 +149,44 @@ public:
   void print();
 
 private:
-  CHECKBOX_PARAM(IsMetricSelected);
-  CHECKBOX_PARAM(IsClock24hStyleSelected);
-  CHECKBOX_PARAM(IsClockSilhouetteEnabled);
-  NUMBER_PARAM(BacklightTimeout);
-  SELECT_PARAM(MeteoIcons);
+  CHECKBOX_PARAM(IsMetricSelected, INTL_IS_METRIC_SYSTEM, true);
+  CHECKBOX_PARAM(IsClock24hStyleSelected, INTL_IS_CLOCK_24H_STYLE, true);
+  CHECKBOX_PARAM(IsClockSilhouetteEnabled, INTL_IS_CLOCK_SILHOUETTE_ENABLED,
+                 true);
 
-  GROUP_PARAM(Owm);
-  TEXT_PARAM(LocationName);
-  TEXT_PARAM(OwmApiKey);
-  NUMBER_PARAM(OwmLatitude);
-  NUMBER_PARAM(OwmLongitude);
-  NUMBER_PARAM(OwmRefreshInterval);
+  NUMBER_PARAM(BacklightTimeout, INTL_BACKLIGHT_TIMEOUT, "0", "0..600",
+               "min='0' max='600' step='1'");
+  SELECT_PARAM(MeteoIcons, INTL_METEO_ICONS, MeteoIconsValues, MeteoIconsNames,
+               MeteoIconsValues[0]);
 
-  GROUP_PARAM(Aqi);
-  TEXT_PARAM(AqiStationUrl1);
-  TEXT_PARAM(AqiStationUrl2);
-  TEXT_PARAM(AqiStationUrl3);
-  NUMBER_PARAM(AqiRefreshInterval);
+  GROUP_PARAM(Owm, INTL_OWM_SETTINGS);
+  TEXT_PARAM(LocationName, INTL_LOCATAION_NAME, nullptr, "");
+  TEXT_PARAM(OwmApiKey, INTL_OWM_API_KEY, nullptr, "");
+  NUMBER_PARAM(OwmLatitude, INTL_OWM_LATITUDE, nullptr, "51.06809",
+               "step='0.00001'");
+  NUMBER_PARAM(OwmLongitude, INTL_OWM_LONGITUDE, nullptr, "16.97507",
+               "step='0.00001'");
+  NUMBER_PARAM(OwmRefreshInterval, INTL_OWM_REFRESH_INTERVAL, "1800",
+               "10..3600", "min='10' max='3600' step='10'");
 
-  GROUP_PARAM(Sensor);
-  SELECT_PARAM(LocalTempSensorType);
-  NUMBER_PARAM(LocalTempSensorRefreshInterval);
+  GROUP_PARAM(Aqi, INTL_AQI_SETTINGS);
+  TEXT_PARAM(AqiStationUrl1, INTL_AQI_URL, nullptr, "");
+  TEXT_PARAM(AqiStationUrl2, INTL_AQI_URL, nullptr, "");
+  TEXT_PARAM(AqiStationUrl3, INTL_AQI_URL, nullptr, "");
+  NUMBER_PARAM(AqiRefreshInterval, INTL_AQI_REFRESH_INTERVAL, "120", "10..3600",
+               "min='10' max='3600' step='10'");
+
+  GROUP_PARAM(Sensor, INTL_LOCAL_TEMP_SETTINGS);
+  SELECT_PARAM(LocalTempSensorType, INTL_LOCAL_TEMP_SENSOR_TYPE,
+               LocalTempSensorValues, LocalTempSensorNames, nullptr);
+  NUMBER_PARAM(LocalTempSensorRefreshInterval, INTL_LOCAL_TEMP_REFRESH_INTERVAL,
+               "60", "10..3600", "min='10' max='3600' step='10'");
+
+  // GROUP_PARAM(Mqtt, INTL_MQTT_SETTINGS);
+  // TEXT_PARAM(MqttHost, INTL_MQTT_HOST, nullptr, "");
+  // NUMBER_PARAM(MqttPort, INTL_MQTT_PORT, "1883", "1..9999",
+  //                     "min='1' max='9999' step='1'");
+  // TEXT_PARAM(MqttTopic, INTL_MQTT_TOPIC, nullptr, "");
 
   bool validateAqiUrl(String url);
 };

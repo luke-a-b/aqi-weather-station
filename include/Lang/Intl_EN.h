@@ -41,35 +41,34 @@ const char INTL_PHASE_5[] PROGMEM = "Waning Gibbous";
 const char INTL_PHASE_6[] PROGMEM = "Last/Third Quarter";
 const char INTL_PHASE_7[] PROGMEM = "Waning Crescent";
 
-const char INTL_IS_METRIC_SYSTEM[] PROGMEM = "Is metric system?";
-const char INTL_IS_CLOCK_24H_STYLE[] PROGMEM = "Is clock 24h style?";
-const char INTL_IS_CLOCK_SILHOUETTE_ENABLED[] PROGMEM =
-    "Is clock silhouette enabled?";
-const char INTL_BACKLIGHT_TIMEOUT[] PROGMEM = "Backlight timeout";
-const char INTL_METEO_ICONS[] PROGMEM = "Meteo icons";
-const char INTL_OWM_SETTINGS[] PROGMEM = "Open Weather Map settings";
-const char INTL_OWM_API_KEY[] PROGMEM = "Open Weather Map API key";
-const char INTL_OWM_API_KEY_PLACEHOLDER[] PROGMEM =
-    "Get key here: https://docs.thingpulse.com/how-tos/openweathermap-key/";
-const char INTL_OWM_LATITUDE[] PROGMEM = "Latitude";
-const char INTL_OWM_LONGITUDE[] PROGMEM = "Longitude";
-const char INTL_OWM_REFRESH_INTERVAL[] PROGMEM =
+// below strings are not to be stored in PROGMEM
+const char INTL_IS_METRIC_SYSTEM[] = "Is metric system?";
+const char INTL_IS_CLOCK_24H_STYLE[] = "Is clock 24h style?";
+const char INTL_IS_CLOCK_SILHOUETTE_ENABLED[] = "Is clock silhouette enabled?";
+const char INTL_BACKLIGHT_TIMEOUT[] = "Backlight timeout";
+const char INTL_METEO_ICONS[] = "Meteo icons";
+const char INTL_OWM_SETTINGS[] = "Open Weather Map settings";
+const char INTL_OWM_API_KEY[] = "Open Weather Map API key";
+const char INTL_OWM_LATITUDE[] = "Latitude";
+const char INTL_OWM_LONGITUDE[] = "Longitude";
+const char INTL_OWM_REFRESH_INTERVAL[] =
     "Open Weather Map refresh data interval seconds";
-const char INTL_LOCATAION_NAME[] PROGMEM = "Location name";
-const char INTL_LOCATAION_NAME_PLACEHOLDER[] PROGMEM =
-    "This is location name to be displayed";
-const char INTL_AQI_SETTINGS[] PROGMEM = "Air Quality Index stations settings";
-const char INTL_AQI_URL_1[] PROGMEM = "AQI stattion URL 1";
-const char INTL_AQI_URL_2[] PROGMEM = "AQI stattion URL 2";
-const char INTL_AQI_URL_3[] PROGMEM = "AQI stattion URL 3";
-const char INTL_AQI_REFRESH_INTERVAL[] PROGMEM =
-    "AQI refresh data interval seconds";
-const char INTL_LOCAL_TEMP_SETTINGS[] PROGMEM =
+const char INTL_LOCATAION_NAME[] = "Location name";
+const char INTL_AQI_SETTINGS[] = "Air Quality Index stations settings";
+const char INTL_AQI_URL[] = "AQI stattion URL";
+const char INTL_AQI_REFRESH_INTERVAL[] = "AQI refresh data interval seconds";
+const char INTL_LOCAL_TEMP_SETTINGS[] =
     "Local temperature/humidity sensor settings";
-const char INTL_LOCAL_TEMP_SENSOR_TYPE[] PROGMEM =
-    "Select type of connected sensor: ";
-const char INTL_LOCAL_TEMP_REFRESH_INTERVAL[] PROGMEM =
+const char INTL_LOCAL_TEMP_SENSOR_TYPE[] = "Select type of connected sensor: ";
+const char INTL_LOCAL_TEMP_REFRESH_INTERVAL[] =
     "Local sensor refresh data interval seconds";
+
+const char INTL_MQTT_SETTINGS[] = "MQTT Settings";
+const char INTL_MQTT_HOST[] = "MQTT server address";
+const char INTL_MQTT_PORT[] = "MQTT port";
+const char INTL_MQTT_TOPIC[] = "MQTT topic";
+
+//////////////////////
 
 const char INTL_OWM_API_KEY_ERROR[] PROGMEM = "Insert correct OWM API Key";
 const char INTL_LOCATION_ERROR[] PROGMEM = "Insert location name";

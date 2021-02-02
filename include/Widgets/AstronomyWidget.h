@@ -4,18 +4,14 @@
 #include "Widgets/Widget.h"
 #include "Models/AstronomyModel.h"
 
-#define ASTRONOMY_UPDATE_INTERVAL 3600 // update every hour
-
-class AstronomyWidget : public Widget
-{
+class AstronomyWidget : public Widget {
 public:
-    AstronomyWidget(AstronomyModel *model, uint16_t y);
+  AstronomyWidget(AstronomyModel *model, uint16_t y);
+  void update();
 
 protected:
-    virtual void redraw();
-    virtual void update(uint32_t now);
-    AstronomyModel *model;
-    int32_t lastUpdate = -ASTRONOMY_UPDATE_INTERVAL * 1000;
+  virtual void redraw();
+  AstronomyModel *model;
 };
 
 #endif

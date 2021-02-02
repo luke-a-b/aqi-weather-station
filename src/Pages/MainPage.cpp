@@ -20,6 +20,10 @@ void MainPage::draw() {
   }
 }
 
+void MainPage::notifyWeatherUpdated() { currentWeatherWidget.update(); }
+
+void MainPage::notifyAstronomyUpdated() { astronomyWidget.update(); }
+
 bool MainPage::handleTouchOff(uint16_t x, uint16_t y, uint16_t z) {
   if (!this->isVisible)
     return false;

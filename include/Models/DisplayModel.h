@@ -10,7 +10,13 @@
 #include "DataSources/LocalTempSensorSource.h"
 #include "assert.h"
 #include <OpenWeather.h>
-#include <SunMoonCalc.h>
+
+typedef struct MoonData {
+  time_t rise; // timestamp in UTC
+  time_t set;
+  double age;
+  uint8_t phase;
+} MoonData;
 
 class DisplayModel : public AstronomyModel,
                      public CurrentWeatherModel,
@@ -28,7 +34,7 @@ public:
   }
   OW_current *getCurrentWeather() { return &currentWeather; }
   OW_daily *getDailyForecasts() { return &dailyForecasts; }
-  SunMoonCalc::Moon *getMoonData() { return &moonData; }
+  MoonData *getMoonData() { return &moonData; }
   LocalTempSensorDataModel *getLocalTempSensor() { return &localTempSensor; }
   void updateWeatherIconsPaths();
 
@@ -49,7 +55,7 @@ public: // implement ClockModel
 
 public: // implement CurrentWeatherModel
   virtual String getCurrentWeatherIconFileName();
-  virtual String getCurrentWeatherCityName();
+  virtual char *getCurrentWeatherCityName();
   virtual float getCurrentWeatherTemp();
   virtual float getTodayMinTemp();
   virtual float getTodayMaxTemp();
@@ -92,7 +98,7 @@ private:
   OW_current currentWeather;
   OW_daily dailyForecasts;
 
-  SunMoonCalc::Moon moonData;
+  MoonData moonData;
 
   struct tm *getLocalTime(time_t time);
   String getWeatherIconFileName(String path, String icon);
