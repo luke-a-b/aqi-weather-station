@@ -16,8 +16,10 @@ void AstronomyWidget::redraw() {
     tft.setTextDatum(BR_DATUM);
     tft.drawString(FPSTR(INTL_MOON), x + width - 10, y + 15);
     tft.setTextDatum(BC_DATUM);
+    tft.setTextPadding(width);
     tft.drawString(FPSTR(MOON_PHASES[model->getMoonPhase()]), x + width / 2,
                    y + height);
+    tft.setTextPadding(center - 31);
 
     tft.setTextDatum(BL_DATUM);
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
