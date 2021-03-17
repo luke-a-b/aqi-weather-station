@@ -18,8 +18,8 @@ bool CurrentWeatherDetailPage::handleTouchOff(uint16_t x, uint16_t y,
 void CurrentWeatherDetailPage::notifyWeatherUpdated() {
   if (this->isVisible) {
     if (lastObservationTime != model->getObservationTime()) {
-      tft.fillScreen(TFT_BLACK);
-      draw();
+      setVisible(false);
+      setVisible(true);
     }
   }
 }
