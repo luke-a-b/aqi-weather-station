@@ -19,7 +19,7 @@
 #define OUTSIDE_GRADIENT TFT_BLACK
 
 AqiPage::AqiPage(AqiDisplayModel *model, ClockModel *clock,
-                 CommandsHanler *commandsHandler)
+                 CommandsHandler *commandsHandler)
     : Page(commandsHandler), model(model),
       clockSmallWidget(clock, 180, 2, &AqiPage::fillGradientRect),
       wifiStatusWidget(2, 0) {

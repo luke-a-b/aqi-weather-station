@@ -6,13 +6,13 @@
 #include "Widgets/Widget.h"
 
 #include "Models/ModelChangeObserver.h"
-#include "CommandsHanler.h"
+#include "CommandsHandler.h"
 
 #define MAX_WIDGETS 16
 
 class Page : public ModelChangeObserver {
 public:
-  Page(CommandsHanler *commandsHandler);
+  Page(CommandsHandler *commandsHandler);
   virtual ~Page();
   virtual void setVisible(boolean visible);
   void addWidget(Widget *widget);
@@ -38,7 +38,7 @@ protected:
   virtual void draw() {}
   boolean isVisible = false;
   Widget *widgets[MAX_WIDGETS];
-  CommandsHanler *commandsHandler;
+  CommandsHandler *commandsHandler;
 };
 
 #endif

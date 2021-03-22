@@ -1,7 +1,8 @@
 #include "Pages/Page.h"
 #include "Config.h"
 
-Page::Page(CommandsHanler *commandsHandler) : commandsHandler(commandsHandler) {
+Page::Page(CommandsHandler *commandsHandler)
+    : commandsHandler(commandsHandler) {
   for (uint8_t i = 0; i < MAX_WIDGETS; i++) {
     widgets[i] = nullptr;
   }

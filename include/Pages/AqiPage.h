@@ -10,7 +10,7 @@
 class AqiPage : public Page {
 public:
   AqiPage(AqiDisplayModel *model, ClockModel *clock,
-          CommandsHanler *commandsHandler);
+          CommandsHandler *commandsHandler);
 
   void setModel(AqiDisplayModel *model);
   virtual void setVisible(boolean visible);

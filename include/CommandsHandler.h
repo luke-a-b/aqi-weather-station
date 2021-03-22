@@ -1,7 +1,7 @@
 #ifndef _COMMANDS_HANDLER_H
 #define _COMMANDS_HANDLER_H
 
-class CommandsHanler
+class CommandsHandler
 {
 public: 
     virtual void showMainPage() = 0;

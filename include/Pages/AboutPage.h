@@ -3,19 +3,17 @@
 
 #include "Page.h"
 
-class AboutPage : public Page
-{
+class AboutPage : public Page {
 public:
-    AboutPage(CommandsHanler* commandsHandler);
+  AboutPage(CommandsHandler *commandsHandler);
 
 protected:
-    virtual void update(uint32_t now);
-    virtual void draw();
-    virtual bool handleTouchOff(uint16_t x, uint16_t y, uint16_t z);
+  virtual void update(uint32_t now);
+  virtual void draw();
+  virtual bool handleTouchOff(uint16_t x, uint16_t y, uint16_t z);
 
-private: 
-    uint32_t lastUpdate = 0;
-
+private:
+  uint32_t lastUpdate = 0;
 };
 
 #endif

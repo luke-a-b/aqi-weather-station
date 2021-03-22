@@ -37,16 +37,18 @@ public:
   void update();
 
 protected: // implements: JsonListener
-  virtual void whitespace(char c);
-  virtual void startDocument();
   virtual void key(const char *key);
   virtual void value(const char *val);
   virtual void endArray();
   virtual void endObject();
-  virtual void endDocument();
   virtual void startArray();
   virtual void startObject();
+#ifdef SHOW_JSON
+  virtual void whitespace(char c);
+  virtual void startDocument();
+  virtual void endDocument();
   virtual void error(const char *message);
+#endif
 
 private:
   boolean parseUrl(String url, AqiDataModel *data);

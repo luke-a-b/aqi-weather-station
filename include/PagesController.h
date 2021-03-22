@@ -11,11 +11,11 @@
 #include "Pages/AboutPage.h"
 #include "Pages/CurrentWeatherDetailPage.h"
 #include "Pages/ForecastPage.h"
-#include "CommandsHanler.h"
+#include "CommandsHandler.h"
 
 class PagesController : public TouchObserver,
                         public ModelChangeObserver,
-                        public CommandsHanler {
+                        public CommandsHandler {
 public:
   PagesController(Backlight *backlight, DisplayModel *model);
   void hideCurrentPage();

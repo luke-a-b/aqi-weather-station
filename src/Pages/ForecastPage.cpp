@@ -6,7 +6,7 @@
 #include "Bitmaps/IconWindSmall.h"
 
 ForecastPage::ForecastPage(ForecastModel *model,
-                           CommandsHanler *commandsHandler)
+                           CommandsHandler *commandsHandler)
     : Page(commandsHandler), model(model) {}
 
 bool ForecastPage::handleTouchOff(uint16_t x, uint16_t y, uint16_t z) {

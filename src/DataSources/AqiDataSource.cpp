@@ -136,18 +136,6 @@ boolean AqiDataSource::parseUrl(String url, AqiDataModel * /*data*/) {
   return true;
 }
 
-void AqiDataSource::whitespace(char c) {
-#ifdef SHOW_JSON
-  DEBUG_PRINTF("JSON whitespace");
-#endif
-}
-
-void AqiDataSource::startDocument() {
-#ifdef SHOW_JSON
-  DEBUG_PRINTF("JSON Start Document");
-#endif
-}
-
 void AqiDataSource::key(const char *key) {
 #ifdef SHOW_JSON
   DEBUG_PRINTF("JSON key: ");
@@ -242,15 +230,15 @@ void AqiDataSource::endObject() {
   currentParent = "";
 }
 
-void AqiDataSource::endDocument() {
 #ifdef SHOW_JSON
-  DEBUG_PRINTFLN("JSON end document");
-#endif
-}
+void AqiDataSource::whitespace(char c) { DEBUG_PRINTF("JSON whitespace"); }
+
+void AqiDataSource::startDocument() { DEBUG_PRINTF("JSON Start Document"); }
+
+void AqiDataSource::endDocument() { DEBUG_PRINTFLN("JSON end document"); }
 
 void AqiDataSource::error(const char *message) {
-#ifdef SHOW_JSON
   DEBUG_PRINTF("JSON error: ");
   DEBUG_PRINTLN(message);
-#endif
 }
+#endif

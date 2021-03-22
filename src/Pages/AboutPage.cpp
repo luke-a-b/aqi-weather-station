@@ -5,7 +5,7 @@
 
 ADC_MODE(ADC_VCC);
 
-AboutPage::AboutPage(CommandsHanler *commandsHandler) : Page(commandsHandler) {
+AboutPage::AboutPage(CommandsHandler *commandsHandler) : Page(commandsHandler) {
   assert(commandsHandler != nullptr);
 }
 

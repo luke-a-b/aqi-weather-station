@@ -2,7 +2,7 @@
 #include "Config.h"
 
 CurrentWeatherDetailPage::CurrentWeatherDetailPage(
-    CurrentWeatherModel *model, CommandsHanler *commandsHandler)
+    CurrentWeatherModel *model, CommandsHandler *commandsHandler)
     : Page(commandsHandler), model(model), currentWeatherWidget(model, 5) {
   addWidget(&currentWeatherWidget);
 }

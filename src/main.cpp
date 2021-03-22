@@ -12,6 +12,7 @@
 #endif
 #include "PagesController.h"
 #include "TouchInterface.h"
+#include "CommandsServer.h"
 
 #include "Fonts/Fonts.h"
 
@@ -23,6 +24,7 @@ DisplayModel model(&config);
 PagesController pagesCtrl(&backlight, &model);
 TouchInterface touchInterface(&tft, &pagesCtrl);
 Fetcher fetcher(&config, &model, &pagesCtrl);
+CommandsServer cmdServer(&pagesCtrl);
 
 #ifdef DEBUG_ON
 MemChecker memChecker;
@@ -91,6 +93,7 @@ void loop() {
     touchInterface.update();
     fetcher.update(now);
     pagesCtrl.update(now);
+    cmdServer.update();
   }
 #ifdef DEBUG_ON
   memChecker.update(now);

@@ -8,7 +8,7 @@
 class CurrentWeatherDetailPage : public Page {
 public:
   CurrentWeatherDetailPage(CurrentWeatherModel *model,
-                           CommandsHanler *commandsHandler);
+                           CommandsHandler *commandsHandler);
 
 protected:
   virtual bool handleTouchOff(uint16_t x, uint16_t y, uint16_t z);

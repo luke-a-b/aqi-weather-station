@@ -1,6 +1,6 @@
 #include "Pages/MainPage.h"
 
-MainPage::MainPage(DisplayModel *model, CommandsHanler *commandsHandler)
+MainPage::MainPage(DisplayModel *model, CommandsHandler *commandsHandler)
     : Page(commandsHandler), clockWidget(model, 0),
       currentWeatherWidget(model, 85), forecastCarouselWidget(model, 184),
       astronomyWidget(model, 257)
