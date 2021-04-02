@@ -41,39 +41,33 @@ const char INTL_PHASE_5[] PROGMEM = "Garbaty";
 const char INTL_PHASE_6[] PROGMEM = "Trzecia Kwadra";
 const char INTL_PHASE_7[] PROGMEM = "Malejący Sierp";
 
-// below strings are not to be stored in PROGMEM
-const char INTL_IS_METRIC_SYSTEM[] = "Czy używać system metrzyczny?";
-const char INTL_IS_CLOCK_24H_STYLE[] = "Czy używać stylu zegara 24h?";
-const char INTL_IS_CLOCK_SILHOUETTE_ENABLED[] = "Czy włączyć poświatę zegara?";
-const char INTL_BACKLIGHT_TIMEOUT[] = "Czas podświetlenia ekranu";
-const char INTL_METEO_ICONS[] = "Ikony meteo";
-const char INTL_OWM_SETTINGS[] = "Ustawienia Open Weather Map";
-const char INTL_OWM_API_KEY[] = "Klucz Open Weather Map API";
-const char INTL_OWM_LATITUDE[] = "Szerokość geograficzna";
-const char INTL_OWM_LONGITUDE[] = "Długość geograficzna";
-const char INTL_OWM_REFRESH_INTERVAL[] = "Interwał odświeżania danych OWM";
-const char INTL_LOCATAION_NAME[] = "Nazwa lokalizacji";
-const char INTL_AQI_SETTINGS[] = "Ustawienia Air Quality Index";
-const char INTL_AQI_URL[] = "Adres URL AQI";
-const char INTL_AQI_REFRESH_INTERVAL[] = "Interwał odświeżania danych AQI";
-const char INTL_LOCAL_TEMP_SETTINGS[] =
-    "Ustawienie lokalnego sensora temperatury/wilgotności";
-const char INTL_LOCAL_TEMP_SENSOR_TYPE[] = "Typ podłączonego sensora";
-const char INTL_LOCAL_TEMP_REFRESH_INTERVAL[] =
-    "Interwał odświeżania lokalnego sensora";
+// below strings are used web config
+#define INTL_IS_METRIC_SYSTEM PSTR("Czy używać system metrzyczny?")
+#define INTL_IS_CLOCK_24H_STYLE PSTR("Czy używać stylu zegara 24h?")
+#define INTL_IS_CLOCK_SILHOUETTE_ENABLED PSTR("Czy włączyć poświatę zegara?")
+#define INTL_BACKLIGHT_TIMEOUT                                                 \
+  PSTR("Czas podświetlenia ekranu - 0 = zawsze właczony")
+#define INTL_METEO_ICONS PSTR("Ikony meteo")
+#define INTL_OWM_SETTINGS PSTR("Ustawienia Open Weather Map")
+#define INTL_OWM_API_KEY PSTR("Klucz Open Weather Map API")
+#define INTL_OWM_LATITUDE PSTR("Szerokość geograficzna")
+#define INTL_OWM_LONGITUDE PSTR("Długość geograficzna")
+#define INTL_OWM_REFRESH_INTERVAL PSTR("Interwał odświeżania danych OWM")
+#define INTL_LOCATAION_NAME PSTR("Nazwa lokalizacji")
+#define INTL_AQI_SETTINGS PSTR("Ustawienia Air Quality Index")
+#define INTL_AQI_URL PSTR("Adres URL AQI")
+#define INTL_AQI_REFRESH_INTERVAL PSTR("Interwał odświeżania danych AQI")
+#define INTL_LOCAL_TEMP_SETTINGS                                               \
+  PSTR("Ustawienie lokalnego sensora temperatury/wilgotności")
+#define INTL_LOCAL_TEMP_SENSOR_TYPE PSTR("Typ podłączonego sensora")
+#define INTL_LOCAL_TEMP_REFRESH_INTERVAL                                       \
+  PSTR("Interwał odświeżania lokalnego sensora")
 
-const char INTL_MQTT_SETTINGS[] = "Ustawienia MQTT";
-const char INTL_MQTT_HOST[] = "Adres serwera MQTT";
-const char INTL_MQTT_PORT[] = "Port serwera MQTT";
-const char INTL_MQTT_TOPIC[] = "Temat MQTT";
-
-//////////////////////
-
-const char INTL_OWM_API_KEY_ERROR[] PROGMEM =
-    "Wprowadź prawidłowy klucz OWM API";
-const char INTL_LOCATION_ERROR[] PROGMEM = "Wprowadź nazwę lokalizacji";
-const char INTL_AQI_URL_ERROR[] PROGMEM =
-    "Wprowadź URL w formacie http://.../data.json lub https://.../data.json";
+#define INTL_OWM_API_KEY_ERROR PSTR("Wprowadź prawidłowy klucz OWM API")
+#define INTL_LOCATION_ERROR PSTR("Wprowadź nazwę lokalizacji")
+#define INTL_AQI_URL_ERROR                                                     \
+  PSTR("Wprowadź URL w formacie http://.../data.json lub "                    \
+       "https://.../data.json")
 
 const char INTL_HTML_GREETINGS[] PROGMEM = "<p>Witaj na stronie {v}!</p>\n";
 const char INTL_HTML_CONFIG_LINK[] PROGMEM =
@@ -90,6 +84,8 @@ const char INTL_HTML_UPDATE[] PROGMEM = "<div style='padding-top:25px;'><a "
                                         "oprogramowania</a></div>\n";
 const char INTL_HTML_CONFIG_VER[] PROGMEM =
     "<div style='font-size: .6em;'>Wersja konfiguracji '{v}'</div>\n";
+
+//////////////////////
 
 const char INTL_IP_ADDRESS[] PROGMEM = "Adres IP:";
 const char INTL_SUBNET_MASK[] PROGMEM = "Maska podsieci:";

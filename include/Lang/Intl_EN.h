@@ -42,39 +42,32 @@ const char INTL_PHASE_6[] PROGMEM = "Last/Third Quarter";
 const char INTL_PHASE_7[] PROGMEM = "Waning Crescent";
 
 // below strings are not to be stored in PROGMEM
-const char INTL_IS_METRIC_SYSTEM[] = "Is metric system?";
-const char INTL_IS_CLOCK_24H_STYLE[] = "Is clock 24h style?";
-const char INTL_IS_CLOCK_SILHOUETTE_ENABLED[] = "Is clock silhouette enabled?";
-const char INTL_BACKLIGHT_TIMEOUT[] = "Backlight timeout";
-const char INTL_METEO_ICONS[] = "Meteo icons";
-const char INTL_OWM_SETTINGS[] = "Open Weather Map settings";
-const char INTL_OWM_API_KEY[] = "Open Weather Map API key";
-const char INTL_OWM_LATITUDE[] = "Latitude";
-const char INTL_OWM_LONGITUDE[] = "Longitude";
-const char INTL_OWM_REFRESH_INTERVAL[] =
-    "Open Weather Map refresh data interval seconds";
-const char INTL_LOCATAION_NAME[] = "Location name";
-const char INTL_AQI_SETTINGS[] = "Air Quality Index stations settings";
-const char INTL_AQI_URL[] = "AQI station URL";
-const char INTL_AQI_REFRESH_INTERVAL[] = "AQI refresh data interval seconds";
-const char INTL_LOCAL_TEMP_SETTINGS[] =
-    "Local temperature/humidity sensor settings";
-const char INTL_LOCAL_TEMP_SENSOR_TYPE[] = "Select type of connected sensor: ";
-const char INTL_LOCAL_TEMP_REFRESH_INTERVAL[] =
-    "Local sensor refresh data interval seconds";
+#define INTL_IS_METRIC_SYSTEM PSTR("Is metric system?")
+#define INTL_IS_CLOCK_24H_STYLE PSTR("Is clock 24h style?")
+#define INTL_IS_CLOCK_SILHOUETTE_ENABLED PSTR("Is clock silhouette enabled?")
+#define INTL_BACKLIGHT_TIMEOUT PSTR("Backlight timeout - 0 = always enabled")
+#define INTL_METEO_ICONS PSTR("Meteo icons")
+#define INTL_OWM_SETTINGS PSTR("Open Weather Map settings")
+#define INTL_OWM_API_KEY PSTR("Open Weather Map API key")
+#define INTL_OWM_LATITUDE PSTR("Latitude")
+#define INTL_OWM_LONGITUDE PSTR("Longitude")
+#define INTL_OWM_REFRESH_INTERVAL                                              \
+  PSTR("Open Weather Map refresh data interval seconds")
+#define INTL_LOCATAION_NAME PSTR("Location name")
+#define INTL_AQI_SETTINGS PSTR("Air Quality Index stations settings")
+#define INTL_AQI_URL PSTR("AQI station URL")
+#define INTL_AQI_REFRESH_INTERVAL PSTR("AQI refresh data interval seconds")
+#define INTL_LOCAL_TEMP_SETTINGS                                               \
+  PSTR("Local temperature/humidity sensor settings")
+#define INTL_LOCAL_TEMP_SENSOR_TYPE PSTR("Select type of connected sensor: ")
+#define INTL_LOCAL_TEMP_REFRESH_INTERVAL                                       \
+  PSTR("Local sensor refresh data interval seconds")
 
-const char INTL_MQTT_SETTINGS[] = "MQTT Settings";
-const char INTL_MQTT_HOST[] = "MQTT server address";
-const char INTL_MQTT_PORT[] = "MQTT port";
-const char INTL_MQTT_TOPIC[] = "MQTT topic";
-
-//////////////////////
-
-const char INTL_OWM_API_KEY_ERROR[] PROGMEM = "Insert correct OWM API Key";
-const char INTL_LOCATION_ERROR[] PROGMEM = "Insert location name";
-const char INTL_AQI_URL_ERROR[] PROGMEM = "Insert URL in following format: "
-                                          "http://.../data.json or "
-                                          "https://.../data.json";
+#define INTL_OWM_API_KEY_ERROR PSTR("Insert correct OWM API Key")
+#define INTL_LOCATION_ERROR PSTR("Insert location name")
+#define INTL_AQI_URL_ERROR                                                     \
+  PSTR("Insert URL in following format: http://.../data.json or "              \
+       "https://.../data.json")
 
 const char INTL_HTML_GREETINGS[] PROGMEM = "<p>Welcome to {v}!</p>\n";
 const char INTL_HTML_CONFIG_LINK[] PROGMEM =
@@ -87,6 +80,8 @@ const char INTL_HTML_UPDATE[] PROGMEM =
     "<div style='padding-top:25px;'><a href='{u}'>Firmware update</a></div>\n";
 const char INTL_HTML_CONFIG_VER[] PROGMEM =
     "<div style='font-size: .6em;'>Firmware config version '{v}'</div>\n";
+
+//////////////////////
 
 const char INTL_IP_ADDRESS[] PROGMEM = "IP address:";
 const char INTL_SUBNET_MASK[] PROGMEM = "Subnet mask:";
