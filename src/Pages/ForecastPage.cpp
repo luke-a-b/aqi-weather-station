@@ -49,34 +49,35 @@ void ForecastPage::draw() {
 
       tft.drawFastHLine(10, y, 220, TFT_DARKGREY);
 
-      tft.setTextDatum(TR_DATUM);
+      Widget::drawBmpFromFile(model->getForecastIconFileName(day), x, y + 19);
+
+      tft.setTextDatum(TL_DATUM);
       tft.setTextColor(TFT_ORANGE, TFT_BLACK);
       struct tm *timeNow = model->getForecastTime(day);
       tft.drawString(String(FPSTR(WEEK_DAYS_NAMES_FULL[timeNow->tm_wday])),
-                     tft.width() - 5, y + 4);
+                     x + 5, y + 4);
 
+      tft.setTextDatum(TR_DATUM);
       tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
-      tft.drawString(model->getForecastDescription(day), tft.width() - 5,
-                     y + 19);
+      tft.drawString(model->getForecastDescription(day), tft.width() - 10,
+                     y + 59);
 
       tft.setTextDatum(TL_DATUM);
       tft.setTextColor(TFT_WHITE, TFT_BLACK);
       tft.drawString(String(model->getForecastTempMin(day), 0) + "/" +
                          String(model->getForecastTempMax(day), 0) + degree,
-                     87, y + 37);
-      Widget::drawBitmap(73, y + 34, &icontempsmall);
+                     87, y + 21);
+      Widget::drawBitmap(73, y + 18, &icontempsmall);
       tft.drawString(String(model->getForecastHumidity(day), 0) + "%", 175,
-                     y + 37);
-      Widget::drawBitmap(158, y + 34, &iconhumiditysmall);
+                     y + 21);
+      Widget::drawBitmap(158, y + 18, &iconhumiditysmall);
       tft.drawString(String(model->getForecastPressure(day), 0) + "hPa", 87,
-                     y + 57);
-      Widget::drawBitmap(70, y + 54, &iconpressuresmall);
+                     y + 39);
+      Widget::drawBitmap(70, y + 36, &iconpressuresmall);
       tft.drawString(String(model->getForecastWindSpeed(day), 0) + speed + " " +
                          model->getForecastWindDirection(day),
-                     175, y + 57);
-      Widget::drawBitmap(158, y + 54, &iconwindsmall);
-
-      Widget::drawBmpFromFile(model->getForecastIconFileName(day), x, y + 19);
+                     175, y + 39);
+      Widget::drawBitmap(158, y + 36, &iconwindsmall);
     }
 
     tft.unloadFont();
