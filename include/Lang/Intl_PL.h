@@ -123,7 +123,7 @@ const char INTL_VISIBILITY[] PROGMEM = "Widoczność:";
 const char INTL_AIR_QUALITY[] PROGMEM = "Jakość powietrza:";
 
 const char INTL_ORGINAL[] PROGMEM = "Oryginał: blog.squix.org, trekawek";
-const char INTL_ADAPTEDBY[] PROGMEM = "Zadoptował: Łukasz Baran";
+const char INTL_ADAPTEDBY[] PROGMEM = "Zaadoptował: Łukasz Baran";
 
 const char INTL_MOUNTING_FILE_SYSTEM[] PROGMEM = "Montowanie systemu plików";
 const char INTL_FORMATTING_FILE_SYSTEM[] PROGMEM =
