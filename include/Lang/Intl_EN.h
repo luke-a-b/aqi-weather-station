@@ -55,7 +55,7 @@ const char INTL_OWM_REFRESH_INTERVAL[] =
     "Open Weather Map refresh data interval seconds";
 const char INTL_LOCATAION_NAME[] = "Location name";
 const char INTL_AQI_SETTINGS[] = "Air Quality Index stations settings";
-const char INTL_AQI_URL[] = "AQI stattion URL";
+const char INTL_AQI_URL[] = "AQI station URL";
 const char INTL_AQI_REFRESH_INTERVAL[] = "AQI refresh data interval seconds";
 const char INTL_LOCAL_TEMP_SETTINGS[] =
     "Local temperature/humidity sensor settings";
@@ -127,17 +127,16 @@ const char INTL_AIR_QUALITY[] PROGMEM = "Air Quality:";
 const char INTL_ORGINAL[] PROGMEM = "Oryginal: blog.squix.org, trekawek";
 const char INTL_ADAPTEDBY[] PROGMEM = "Adopted by: Lukasz Baran";
 
-const char INTL_MOUNTING_FILE_SYSTEM[] PROGMEM = "Montowanie systemu plików";
-const char INTL_FORMATTING_FILE_SYSTEM[] PROGMEM =
-    "Formatowanie systemu plików";
+const char INTL_MOUNTING_FILE_SYSTEM[] PROGMEM = "Mounting file system";
+const char INTL_FORMATTING_FILE_SYSTEM[] PROGMEM = "Formatting file system";
 const char INTL_SETTING_TOUCH_CALIBRATION[] PROGMEM =
-    "Ustawianie kalibraci dotyku";
-const char INTL_PREPARING_OBJECTS[] PROGMEM = "Przygotowanie obiektów";
-const char INTL_CONNECTED[] PROGMEM = "Podłączony: ";
-const char INTL_UPDATING_DATA[] PROGMEM = "Aktualizacja danych";
-const char INTL_DONE[] PROGMEM = "Gotowe!";
-const char INTL_CONNECTING_TO[] PROGMEM = "Łączę z ";
-const char INTL_NO_CONNECTION[] PROGMEM = "Brak połączenia WiFi";
+    "Calibrating touch screen";
+const char INTL_PREPARING_OBJECTS[] PROGMEM = "Preparing objects";
+const char INTL_CONNECTED[] PROGMEM = "Connected: ";
+const char INTL_UPDATING_DATA[] PROGMEM = "Fetching data";
+const char INTL_DONE[] PROGMEM = "Done!";
+const char INTL_CONNECTING_TO[] PROGMEM = "Connecting to ";
+const char INTL_NO_CONNECTION[] PROGMEM = "No WiFi - check config";
 const char INTL_TOUCH_CORNERS[] PROGMEM = "Touch corners as indicated";
 const char INTL_CALIBRATION_COMPLETE[] PROGMEM = "Calibration complete!";
 

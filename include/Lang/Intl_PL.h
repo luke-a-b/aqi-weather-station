@@ -13,7 +13,7 @@ const char INTL_MONDAY[] PROGMEM = "Poniedziałek";
 const char INTL_TUEDAY[] PROGMEM = "Wtorek";
 const char INTL_WEDDAY[] PROGMEM = "Środa";
 const char INTL_THUDAY[] PROGMEM = "Czwartek";
-const char INTL_FRIDAY[] PROGMEM = "Ptątek";
+const char INTL_FRIDAY[] PROGMEM = "Piątek";
 const char INTL_SATDAY[] PROGMEM = "Sobota";
 
 const char INTL_JANUARY[] PROGMEM = "Styczeń";
@@ -33,7 +33,7 @@ const char INTL_MOON[] PROGMEM = "Księżyc";
 const char INTL_SUN[] PROGMEM = "Słońce";
 
 const char INTL_PHASE_0[] PROGMEM = "Nów";
-const char INTL_PHASE_1[] PROGMEM = "Wzarastający Sierp";
+const char INTL_PHASE_1[] PROGMEM = "Wzrastający Sierp";
 const char INTL_PHASE_2[] PROGMEM = "Pierwsza Kwadra";
 const char INTL_PHASE_3[] PROGMEM = "Poszerzony";
 const char INTL_PHASE_4[] PROGMEM = "Pełnia";
@@ -93,8 +93,8 @@ const char INTL_HTML_CONFIG_VER[] PROGMEM =
 
 const char INTL_IP_ADDRESS[] PROGMEM = "Adres IP:";
 const char INTL_SUBNET_MASK[] PROGMEM = "Maska podsieci:";
-const char INTL_GATEWAY[] PROGMEM = "Bama:";
-const char INTL_MAC_ADDRESS[] PROGMEM = "Ades MAC:";
+const char INTL_GATEWAY[] PROGMEM = "Brama:";
+const char INTL_MAC_ADDRESS[] PROGMEM = "Adres MAC:";
 const char INTL_SSID[] PROGMEM = "SSID:";
 const char INTL_RSSI[] PROGMEM = "Siła WiFi:";
 const char INTL_WIFI_QALITY[] PROGMEM = "Jakość Wifi:";
@@ -138,7 +138,7 @@ const char INTL_CONNECTED[] PROGMEM = "Podłączony: ";
 const char INTL_UPDATING_DATA[] PROGMEM = "Aktualizacja danych";
 const char INTL_DONE[] PROGMEM = "Gotowe!";
 const char INTL_CONNECTING_TO[] PROGMEM = "Łączenie z ";
-const char INTL_NO_CONNECTION[] PROGMEM = "Brak WiFi - srawdź konfigurację!";
+const char INTL_NO_CONNECTION[] PROGMEM = "Brak WiFi - sprawdź konfigurację!";
 const char INTL_TOUCH_CORNERS[] PROGMEM = "Dodknij wskazane narożniki";
 const char INTL_CALIBRATION_COMPLETE[] PROGMEM = "Kalibracja zakończona!";
 
