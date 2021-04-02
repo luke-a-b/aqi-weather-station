@@ -24,7 +24,7 @@ DisplayModel model(&config);
 PagesController pagesCtrl(&backlight, &model);
 TouchInterface touchInterface(&tft, &pagesCtrl);
 Fetcher fetcher(&config, &model, &pagesCtrl);
-CommandsServer cmdServer(&pagesCtrl);
+CommandsServer cmdServer(&pagesCtrl, &model);
 
 #ifdef DEBUG_ON
 MemChecker memChecker;

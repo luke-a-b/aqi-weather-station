@@ -2,41 +2,56 @@
 #include "Config.h"
 #include "CommandsServer.h"
 
-CommandsServer::CommandsServer(CommandsHandler *commandHandler)
-    : commandHandler(commandHandler), wifiServer(8080) {
-  wifiServer.begin();
+CommandsServer::CommandsServer(CommandsHandler *commandHandler,
+                               LocalSensorModel *localSensor)
+    : commandHandler(commandHandler), localSensor(localSensor),
+      webServer(8080) {
+  webServer.begin();
+  webServer.on("/command", [this] { this->handleCommand(); });
+  webServer.on("/localsensor", [this] { this->handleLocalSensor(); });
+  webServer.onNotFound([this] { this->handleNotFount(); });
 }
 
-void CommandsServer::update() {
-  WiFiClient client = wifiServer.available();
-  uint32_t timeout = millis();
+void CommandsServer::update() { webServer.handleClient(); }
+
+void CommandsServer::handleCommand() {
   JSON_Decoder parser;
   parser.setListener(this);
-  String body = "";
-  uint8_t buf;
+  String body = webServer.arg("plain");
+
 #ifdef SHOW_JSON
-  int ccount = 0;
+  DEBUG_PRINTLN(body);
 #endif
-  while (client.available()) {
-    size_t length = 1;
-    client.read(&buf, length);
-    parser.parse(buf);
-#ifdef SHOW_JSON
-    if (buf == '{' || buf == '[' || buf == '}' || buf == ']')
-      DEBUG_PRINTFLN("");
-    DEBUG_PRINT(buf);
-    if (ccount++ > 100 && buf == ',') {
-      ccount = 0;
-      DEBUG_PRINTFLN("");
-    }
-#endif
-    if ((millis() - timeout) > 1000UL) {
-      DEBUG_PRINTFLN("[CommandsServer] JSON client timeout");
+
+  parseResult = body.length() > 0 ? true : false;
+
+  for (uint8_t i = 0; i < body.length(); i++) {
+    parseResult &= parser.parse(body[i]);
+    if (!parseResult)
       break;
-    }
-    // give WiFi and TCP/IP libraries a chance to handle pending events
     yield();
   }
+
+  if (parseResult) {
+    webServer.send(200);
+  } else {
+    webServer.send(404);
+  }
+}
+
+void CommandsServer::handleLocalSensor() {
+  if (localSensor->isLocalTempSensorEnabled()) {
+    String localSensorData = FPSTR(LOCAL_SENSOR_DATA_JSON);
+    localSensorData.replace("{T}", String(localSensor->getLocalTemp()));
+    localSensorData.replace("{H}", String(localSensor->getLocalHumidity()));
+    webServer.send(200, "text/JSON", localSensorData);
+  } else {
+    webServer.send(404, "text/plain", F("Local sensor not enabled"));
+  }
+}
+
+void CommandsServer::handleNotFount() {
+  webServer.send(404, "text/plain", F("Not found"));
 }
 
 #ifdef SHOW_JSON
@@ -53,12 +68,13 @@ void CommandsServer::startObject() { DEBUG_PRINTFLN("JSON start object"); }
 void CommandsServer::endObject() { DEBUG_PRINTFLN("JSON end object"); }
 
 void CommandsServer::endDocument() { DEBUG_PRINTFLN("JSON end document"); }
+#endif
 
 void CommandsServer::error(const char *message) {
   DEBUG_PRINTF("JSON error: ");
   DEBUG_PRINTLN(message);
+  parseResult = false;
 }
-#endif
 
 void CommandsServer::key(const char *key) {
 #ifdef SHOW_JSON
@@ -90,6 +106,7 @@ void CommandsServer::value(const char *val) {
     } else {
       DEBUG_PRINTF("Error: show_page value unsupported: ");
       DEBUG_PRINTLN(value);
+      parseResult = false;
     }
   } else if (currentKey == "backlight") {
     if (value == "on") {
@@ -99,11 +116,13 @@ void CommandsServer::value(const char *val) {
     } else {
       DEBUG_PRINTF("Error: backlight value unsupported: ");
       DEBUG_PRINTLN(value);
+      parseResult = false;
     }
   } else if (currentKey == "backlight_timeout") {
     commandHandler->setBacklightTimeout(value.toInt());
   } else {
     DEBUG_PRINTF("Error: command not supported: ");
     DEBUG_PRINTLN(currentKey);
+    parseResult = false;
   }
 }

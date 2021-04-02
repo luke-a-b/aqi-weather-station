@@ -2,8 +2,9 @@
 #define _CURRENT_WEATHER_MODEL_H
 
 #include <Arduino.h>
+#include "LocalSensorModel.h"
 
-class CurrentWeatherModel {
+class CurrentWeatherModel : public LocalSensorModel {
 public:
   virtual boolean isMetricSelected() = 0;
   virtual String getCurrentWeatherIconFileName() = 0;
@@ -24,9 +25,6 @@ public:
   virtual String getCurrentWeatherDescription() = 0;
   virtual uint16_t getCurrentWeatherPressure() = 0;
   virtual uint8_t getCurrentWeatherHumidity() = 0;
-  virtual boolean isLocalTempSensorEnabled() = 0;
-  virtual float getLocalTemp() = 0;
-  virtual float getLocalHumidity() = 0;
   virtual uint32_t getObservationTime() = 0;
   virtual String getCurrentAirQuality() = 0;
 };

@@ -65,6 +65,9 @@ const char WEATHER_ICON_LARGE_PATH[] PROGMEM =
 const char WEATHER_ICON_SMALL_PATH[] PROGMEM =
     "/weather/{folder}/small/{icon}.bmp";
 
+const char LOCAL_SENSOR_DATA_JSON[] PROGMEM =
+    "{\n  \"temperature\":{T},\n  \"humidity\":{H}\n}";
+
 ////////////////
 
 #define CHECKBOX_PARAM_LEN 16
