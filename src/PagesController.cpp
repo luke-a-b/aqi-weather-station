@@ -59,6 +59,10 @@ void PagesController::setBacklightTimeout(unsigned long timeout) {
   backlight->setBacklightTimeout(timeout);
 }
 
+bool PagesController::isBacklightActive() {
+  return backlight->isBacklightActive();
+}
+
 void PagesController::switchOffBacklight() { backlight->setBacklight(false); }
 
 void PagesController::switchOnBacklight() { backlight->setBacklight(true); }
@@ -70,7 +74,7 @@ bool PagesController::handleTouchOn(uint16_t x, uint16_t y, uint16_t z) {
 
 bool PagesController::handleTouchOff(uint16_t x, uint16_t y, uint16_t z) {
   assert(currentPage != nullptr);
-  if (backlight->getBacklight()) {
+  if (backlight->isBacklightActive()) {
     currentPage->handleTouchOff(x, y, z);
   }
   backlight->setBacklight(true);

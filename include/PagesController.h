@@ -34,6 +34,7 @@ public: // implements CommandsHandler
   virtual void showForecastPage();
   virtual void showAboutPage();
   virtual void setBacklightTimeout(unsigned long timeout);
+  virtual bool isBacklightActive();
   virtual void switchOffBacklight();
   virtual void switchOnBacklight();
 

@@ -35,9 +35,11 @@ private:
 
   bool parseResult;
 
+  void handleBacklight();
   void handleCommand();
   void handleLocalSensor();
-  void handleNotFount();
+  void sendOk();
+  void sendError();
 };
 
 #endif

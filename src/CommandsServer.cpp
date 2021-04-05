@@ -7,12 +7,21 @@ CommandsServer::CommandsServer(CommandsHandler *commandHandler,
     : commandHandler(commandHandler), localSensor(localSensor),
       webServer(8080) {
   webServer.begin();
-  webServer.on("/command", [this] { this->handleCommand(); });
+  webServer.on("/backlight", [this] { this->handleBacklight(); });
+  webServer.on("/showpage", [this] { this->handleCommand(); });
   webServer.on("/localsensor", [this] { this->handleLocalSensor(); });
-  webServer.onNotFound([this] { this->handleNotFount(); });
+  webServer.onNotFound([this] { this->sendError(); });
 }
 
 void CommandsServer::update() { webServer.handleClient(); }
+
+void CommandsServer::handleBacklight() {
+  if (webServer.method() == HTTP_GET) {
+    sendOk();
+  } else {
+    handleCommand();
+  }
+}
 
 void CommandsServer::handleCommand() {
   JSON_Decoder parser;
@@ -33,25 +42,31 @@ void CommandsServer::handleCommand() {
   }
 
   if (parseResult) {
-    webServer.send(200);
+    sendOk();
   } else {
-    webServer.send(404);
+    sendError();
   }
+}
+
+void CommandsServer::sendOk() {
+  String response = FPSTR(RESPONSE_DATA_JSON);
+  response.replace("{B}", String(commandHandler->isBacklightActive()));
+  webServer.send(200, "application/json", response);
+}
+
+void CommandsServer::sendError() {
+  webServer.send(404, "text/plain", F("Not supported\n"));
 }
 
 void CommandsServer::handleLocalSensor() {
   if (localSensor->isLocalTempSensorEnabled()) {
-    String localSensorData = FPSTR(LOCAL_SENSOR_DATA_JSON);
-    localSensorData.replace("{T}", String(localSensor->getLocalTemp()));
-    localSensorData.replace("{H}", String(localSensor->getLocalHumidity()));
-    webServer.send(200, "text/JSON", localSensorData);
+    String response = FPSTR(LOCAL_SENSOR_DATA_JSON);
+    response.replace("{T}", String(localSensor->getLocalTemp()));
+    response.replace("{H}", String(localSensor->getLocalHumidity()));
+    webServer.send(200, "application/json", response);
   } else {
-    webServer.send(404, "text/plain", F("Local sensor not enabled"));
+    sendError();
   }
-}
-
-void CommandsServer::handleNotFount() {
-  webServer.send(404, "text/plain", F("Not found"));
 }
 
 #ifdef SHOW_JSON
@@ -92,7 +107,7 @@ void CommandsServer::value(const char *val) {
   DEBUG_PRINTF(", value: ");
   DEBUG_PRINTLN(value);
 #endif
-  if (currentKey == "show_page") {
+  if (currentKey == "page") {
     if (value == "main") {
       commandHandler->showMainPage();
     } else if (value == "aqi") {
@@ -108,17 +123,17 @@ void CommandsServer::value(const char *val) {
       DEBUG_PRINTLN(value);
       parseResult = false;
     }
-  } else if (currentKey == "backlight") {
-    if (value == "on") {
+  } else if (currentKey == "active") {
+    if (value == "true") {
       commandHandler->switchOnBacklight();
-    } else if (value == "off") {
+    } else if (value == "false") {
       commandHandler->switchOffBacklight();
     } else {
       DEBUG_PRINTF("Error: backlight value unsupported: ");
       DEBUG_PRINTLN(value);
       parseResult = false;
     }
-  } else if (currentKey == "backlight_timeout") {
+  } else if (currentKey == "timeout") {
     commandHandler->setBacklightTimeout(value.toInt());
   } else {
     DEBUG_PRINTF("Error: command not supported: ");

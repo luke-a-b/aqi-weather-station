@@ -10,6 +10,7 @@ public:
     virtual void showForecastPage() = 0;
     virtual void showAboutPage() = 0;
     virtual void setBacklightTimeout(unsigned long timeout) = 0;
+    virtual bool isBacklightActive() = 0;
     virtual void switchOffBacklight() = 0;
     virtual void switchOnBacklight() = 0;
 };
