@@ -39,6 +39,7 @@ void Config::addCustomWebParams(IotWebConf *iotWebConf) {
   iotWebConf->addParameterGroup(this->groupAqi);
 
   this->groupSensor->addItem(this->LocalTempSensorTypeParam);
+  this->groupSensor->addItem(this->LocalTempSensorCalibrationParam);
   this->groupSensor->addItem(this->LocalTempSensorRefreshIntervalParam);
   iotWebConf->addParameterGroup(this->groupSensor);
 }

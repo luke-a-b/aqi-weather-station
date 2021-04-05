@@ -165,7 +165,9 @@ boolean DisplayModel::isLocalTempSensorEnabled() {
   return config->isLocalTempSensorEnabled();
 }
 
-float DisplayModel::getLocalTemp() { return localTempSensor.temp; }
+float DisplayModel::getLocalTemp() {
+  return localTempSensor.temp + config->getLocalTempSensorCalibration();
+}
 
 float DisplayModel::getLocalHumidity() { return localTempSensor.humidity; }
 

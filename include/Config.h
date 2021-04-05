@@ -5,7 +5,7 @@
 #include <IotWebConf.h>
 #include <IotWebConfUsing.h>
 
-#define CONFIG_VERSION "0.1"
+#define CONFIG_VERSION "0.2"
 
 #ifdef DEBUG_ON
 #ifndef DEBUG_PRINTF
@@ -66,12 +66,13 @@ const char WEATHER_ICON_SMALL_PATH[] PROGMEM =
     "/weather/{folder}/small/{icon}.bmp";
 
 const char LOCAL_SENSOR_DATA_JSON[] PROGMEM =
-    "{\n  \"temperature\":{T},\n  \"humidity\":{H}\n}";
+    "{\"temperature\": {T}, \"humidity\": {H} }";
+const char RESPONSE_DATA_JSON[] PROGMEM = "{\"is_backlight_active\": {B} }";
 
 ////////////////
 
 #define CHECKBOX_PARAM_LEN 16
-#define CHECKBOX_PARAM(name, label, default)                                   \
+#define CHECKBOX_PARAM(name)                                                   \
   char name[CHECKBOX_PARAM_LEN] = {0};                                         \
   IotWebConfCheckboxParameter *name##Param
 #define CREATE_CHECKBOX_PARAM(name, label, default)                            \
@@ -79,7 +80,7 @@ const char LOCAL_SENSOR_DATA_JSON[] PROGMEM =
                                                 CHECKBOX_PARAM_LEN, default)
 
 #define NUMBER_PARAM_LEN 16
-#define NUMBER_PARAM(name, label, default, placeholder, custom)                \
+#define NUMBER_PARAM(name)                                                     \
   char name[NUMBER_PARAM_LEN] = {0};                                           \
   IotWebConfNumberParameter *name##Param
 #define CREATE_NUMBER_PARAM(name, label, default, placeholder, custom)         \
@@ -87,7 +88,7 @@ const char LOCAL_SENSOR_DATA_JSON[] PROGMEM =
       label, #name, name, NUMBER_PARAM_LEN, default, placeholder, custom)
 
 #define TEXT_PARAM_LEN 128
-#define TEXT_PARAM(name, label, default, placeholder)                          \
+#define TEXT_PARAM(name)                                                       \
   char name[TEXT_PARAM_LEN] = {0};                                             \
   IotWebConfTextParameter *name##Param
 #define CREATE_TEXT_PARAM(name, label, default, placeholder)                   \
@@ -95,7 +96,7 @@ const char LOCAL_SENSOR_DATA_JSON[] PROGMEM =
       label, #name, name, TEXT_PARAM_LEN, default, placeholder)
 
 #define SELECT_PARAM_LEN 32
-#define SELECT_PARAM(name, label, values, names, default)                      \
+#define SELECT_PARAM(name)                                                     \
   char name[SELECT_PARAM_LEN] = {0};                                           \
   IotWebConfSelectParameter *name##Param
 #define CREATE_SELECT_PARAM(name, label, values, names, default)               \
@@ -103,7 +104,7 @@ const char LOCAL_SENSOR_DATA_JSON[] PROGMEM =
       label, #name, name, SELECT_PARAM_LEN, (char *)values, (char *)names,     \
       sizeof(values) / SELECT_PARAM_LEN, SELECT_PARAM_LEN, default)
 
-#define GROUP_PARAM(name, label) IotWebConfParameterGroup *group##name
+#define GROUP_PARAM(name) IotWebConfParameterGroup *group##name
 #define CREATE_GROUP_PARAM(name, label)                                        \
   group##name = new IotWebConfParameterGroup(label)
 
@@ -147,6 +148,9 @@ public:
   char *getOwmLongitude() { return this->OwmLongitude; }
   int getOwmRefreshInterval() { return atoi(this->OwmRefreshInterval); }
   int getAqiRefreshInterval() { return atoi(this->AqiRefreshInterval); }
+  double getLocalTempSensorCalibration() {
+    return atof(this->LocalTempSensorCalibration);
+  }
   int getLocalTempSensorRefreshInterval() {
     return atoi(this->LocalTempSensorRefreshInterval);
   }
@@ -188,44 +192,38 @@ public:
     CREATE_GROUP_PARAM(Sensor, INTL_LOCAL_TEMP_SETTINGS);
     CREATE_SELECT_PARAM(LocalTempSensorType, INTL_LOCAL_TEMP_SENSOR_TYPE,
                         LocalTempSensorValues, LocalTempSensorNames, nullptr);
+    CREATE_NUMBER_PARAM(LocalTempSensorCalibration, INTL_LOCAL_TEMP_CALIBRATION,
+                        "0", "-10..10", "min='-10' max='10' step='0.1'");
     CREATE_NUMBER_PARAM(LocalTempSensorRefreshInterval,
                         INTL_LOCAL_TEMP_REFRESH_INTERVAL, "60", "10..3600",
                         "min='10' max='3600' step='10'");
   }
 
 private:
-  CHECKBOX_PARAM(IsMetricSelected, INTL_IS_METRIC_SYSTEM, true);
-  CHECKBOX_PARAM(IsClock24hStyleSelected, INTL_IS_CLOCK_24H_STYLE, true);
-  CHECKBOX_PARAM(IsClockSilhouetteEnabled, INTL_IS_CLOCK_SILHOUETTE_ENABLED,
-                 true);
+  CHECKBOX_PARAM(IsMetricSelected);
+  CHECKBOX_PARAM(IsClock24hStyleSelected);
+  CHECKBOX_PARAM(IsClockSilhouetteEnabled);
 
-  NUMBER_PARAM(BacklightTimeout, INTL_BACKLIGHT_TIMEOUT, "0", "0..600",
-               "min='0' max='600' step='1'");
-  SELECT_PARAM(MeteoIcons, INTL_METEO_ICONS, MeteoIconsValues, MeteoIconsNames,
-               MeteoIconsValues[0]);
+  NUMBER_PARAM(BacklightTimeout);
+  SELECT_PARAM(MeteoIcons);
 
-  GROUP_PARAM(Owm, INTL_OWM_SETTINGS);
-  TEXT_PARAM(LocationName, INTL_LOCATAION_NAME, nullptr, "");
-  TEXT_PARAM(OwmApiKey, INTL_OWM_API_KEY, nullptr, "");
-  NUMBER_PARAM(OwmLatitude, INTL_OWM_LATITUDE, nullptr, "51.06809",
-               "step='0.00001'");
-  NUMBER_PARAM(OwmLongitude, INTL_OWM_LONGITUDE, nullptr, "16.97507",
-               "step='0.00001'");
-  NUMBER_PARAM(OwmRefreshInterval, INTL_OWM_REFRESH_INTERVAL, "1800",
-               "10..3600", "min='10' max='3600' step='10'");
+  GROUP_PARAM(Owm);
+  TEXT_PARAM(LocationName);
+  TEXT_PARAM(OwmApiKey);
+  NUMBER_PARAM(OwmLatitude);
+  NUMBER_PARAM(OwmLongitude);
+  NUMBER_PARAM(OwmRefreshInterval);
 
-  GROUP_PARAM(Aqi, INTL_AQI_SETTINGS);
-  TEXT_PARAM(AqiStationUrl1, INTL_AQI_URL, nullptr, "");
-  TEXT_PARAM(AqiStationUrl2, INTL_AQI_URL, nullptr, "");
-  TEXT_PARAM(AqiStationUrl3, INTL_AQI_URL, nullptr, "");
-  NUMBER_PARAM(AqiRefreshInterval, INTL_AQI_REFRESH_INTERVAL, "120", "10..3600",
-               "min='10' max='3600' step='10'");
+  GROUP_PARAM(Aqi);
+  TEXT_PARAM(AqiStationUrl1);
+  TEXT_PARAM(AqiStationUrl2);
+  TEXT_PARAM(AqiStationUrl3);
+  NUMBER_PARAM(AqiRefreshInterval);
 
-  GROUP_PARAM(Sensor, INTL_LOCAL_TEMP_SETTINGS);
-  SELECT_PARAM(LocalTempSensorType, INTL_LOCAL_TEMP_SENSOR_TYPE,
-               LocalTempSensorValues, LocalTempSensorNames, nullptr);
-  NUMBER_PARAM(LocalTempSensorRefreshInterval, INTL_LOCAL_TEMP_REFRESH_INTERVAL,
-               "60", "10..3600", "min='10' max='3600' step='10'");
+  GROUP_PARAM(Sensor);
+  SELECT_PARAM(LocalTempSensorType);
+  NUMBER_PARAM(LocalTempSensorCalibration);
+  NUMBER_PARAM(LocalTempSensorRefreshInterval);
 
   bool validateAqiUrl(String url);
 };

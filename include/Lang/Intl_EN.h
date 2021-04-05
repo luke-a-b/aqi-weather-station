@@ -60,6 +60,7 @@ const char INTL_PHASE_7[] PROGMEM = "Waning Crescent";
 #define INTL_LOCAL_TEMP_SETTINGS                                               \
   PSTR("Local temperature/humidity sensor settings")
 #define INTL_LOCAL_TEMP_SENSOR_TYPE PSTR("Select type of connected sensor: ")
+#define INTL_LOCAL_TEMP_CALIBRATION PSTR("Local sensor calibration")
 #define INTL_LOCAL_TEMP_REFRESH_INTERVAL                                       \
   PSTR("Local sensor refresh data interval seconds")
 

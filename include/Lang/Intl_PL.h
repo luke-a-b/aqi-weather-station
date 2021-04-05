@@ -60,6 +60,8 @@ const char INTL_PHASE_7[] PROGMEM = "Malejący Sierp";
 #define INTL_LOCAL_TEMP_SETTINGS                                               \
   PSTR("Ustawienie lokalnego sensora temperatury/wilgotności")
 #define INTL_LOCAL_TEMP_SENSOR_TYPE PSTR("Typ podłączonego sensora")
+#define INTL_LOCAL_TEMP_CALIBRATION                                            \
+  PSTR("Wartość kalibracyjna lokalnego sensora")
 #define INTL_LOCAL_TEMP_REFRESH_INTERVAL                                       \
   PSTR("Interwał odświeżania lokalnego sensora")
 
