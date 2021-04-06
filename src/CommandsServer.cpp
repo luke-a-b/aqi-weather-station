@@ -50,7 +50,8 @@ void CommandsServer::handleCommand() {
 
 void CommandsServer::sendOk() {
   String response = FPSTR(RESPONSE_DATA_JSON);
-  response.replace("{B}", String(commandHandler->isBacklightActive()));
+  response.replace("{B}", commandHandler->isBacklightActive() ? "\"true\""
+                                                              : "\"false\"");
   webServer.send(200, "application/json", response);
 }
 
